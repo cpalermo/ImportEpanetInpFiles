@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="/plugins/ImportEpanetInpFiles">
+    <file>impepanet.png</file>
+  </qresource>
+</RCC>
