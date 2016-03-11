@@ -14,9 +14,9 @@ version=0.1
 author=KIOS Research Center
 email=mariosmsk@gmail.com
 
-about=KIOS Research Center for Intelligent Systems and Networks
+about=ImportEpanetInpFiles converts EPANET Input File to shapefiles and adds them in the QGIS canvas. Also, the shapefiles stored into the _shapefiles_ folder.
 
-tracker=KIOS=http://www.kios.ucy.ac.cy
+tracker=https://github.com/KIOS-Research/ImportEpanetInpFiles/issues
 repository=https://github.com/KIOS-Research/ImportEpanetInpFiles
 # End of mandatory metadata
 
@@ -26,9 +26,9 @@ repository=https://github.com/KIOS-Research/ImportEpanetInpFiles
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=
+tags=epanet import inp network
 
-homepage=
+homepage=https://github.com/KIOS-Research/ImportEpanetInpFiles
 category=Plugins
 icon=icon.png# experimental flag
 experimental=False
