@@ -34,6 +34,14 @@ class ImpEpanet(object):
     file_extension = os.path.dirname(filePath)
     res = file_extension + '/_shapefiles_/'
     inpname = os.path.basename(filePath)
+    if inpname.index('.') != len(inpname)-4:
+        qgis.utils.iface.messageBar().clearWidgets()
+        msgBox = QMessageBox()
+        msgBox.setWindowTitle('ImportEpanetInpFiles')
+        msgBox.setText('Warning name of input file.')
+        msgBox.exec_()
+        return
+
     shpfiles = []
     for dirpath, subdirs, files in os.walk(res):
         for x in files:
@@ -71,6 +79,8 @@ class ImpEpanet(object):
       #iface.actionToggleEditing().trigger()
       #iface.actionToggleEditing().trigger()
     #clear warnings
+
+
     qgis.utils.iface.messageBar().clearWidgets()
     msgBox = QMessageBox()
     msgBox.setWindowTitle('ImportEpanetInpFiles')
