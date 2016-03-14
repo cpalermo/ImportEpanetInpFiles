@@ -1,17 +1,21 @@
 ﻿#(C)Marios Kyriakou 2016
 #University of Cyprus, KIOS Research Center for Intelligent Systems and Networks
 import shapefile, os
-import epamodule as d
+import readEpanetFile as d
 
 def epaShp(inpname):
     file_extension = os.path.dirname(inpname)
     inpname = os.path.basename(inpname)
-    inp = file_extension + '\\'+ inpname
-    newpath = file_extension + '\\_shapefiles_'
+    inp = file_extension + '/'+ inpname
+    if len(file_extension)==0:
+        inp = inpname
+    newpath = file_extension + '/_shapefiles_'
     if not os.path.exists(newpath):
         os.makedirs(newpath)
 
-    d.LoadInpFile(inp)
+    d.LoadFile(inp)
+    d.BinUpdateClass()
+    nlinkCount=d.getBinLinkCount()
     res = newpath + '\\'
     # Write Junction Shapefile
     w = shapefile.Writer(shapefile.POINT)
@@ -21,7 +25,7 @@ def epaShp(inpname):
     w.field('pattern','C',254)
     w.field('demand','N',20,9)
 
-    xy=d.getNodeCoordinates()
+    xy=d.getBinNodeCoordinates()
 
     x=xy[0]
     y=xy[1]
@@ -31,22 +35,22 @@ def epaShp(inpname):
     y2=xy[5]
     vertx=xy[6]
     verty=xy[7]
-    vertxy=[]
     vertxyFinal=[]
     for i in range(len(vertx)):
+        vertxy=[]
         for u in range(len(vertx[i])):
             vertxy.append([float(vertx[i][u]),float(verty[i][u])])
-            vertxyFinal.append(vertxy[u])
+        if vertxy!=[]:
+            vertxyFinal.append(vertxy)
 
-    if d.getNodeJunctionsCount()>0:
-        ndEle=d.getNodeElevations()
-        ndBaseD=d.getNodeBaseDemands()
-        ndID=d.getNodeNameID()
-        ndPatIndex=d.getNodeDemandPatternIndex()
-        ndPatID=d.getPatternNameID()
-        for i in range(0,d.getNodeJunctionsCount()):
+    if d.getBinNodeJunctionCount()>0:
+        ndEle=d.getBinNodeJunctionElevations()
+        ndBaseD=d.getBinNodeBaseDemands()
+        ndID=d.getBinNodeNameID()
+        ndPatID=d.getBinNodeDemandPatternID()
+        for i in range(0,d.getBinNodeJunctionCount()):
             w.point(float(x[i]), float(y[i]))
-            w.record(ndID[i],ndEle[i],ndPatID[int(ndPatIndex[i]-1)],ndBaseD[i])
+            w.record(ndID[i],ndEle[i],ndPatID[i],ndBaseD[i])
         w.save(res+inpname[:len(inpname)-4]+'_junctions')
 
     # Write Pipe Shapefile
@@ -60,20 +64,15 @@ def epaShp(inpname):
     wpipe.field('roughness','N',20,9)
     wpipe.field('minorloss','N',20,9)
     wpipe.autoBalance = 1
-    parts=[];pIndex=[]
-    pumps = d.getLinkPumpIndex()
-    for i in range(len(pumps)):
-        pIndex.append(pumps[i]-1)
-    vIndex=[]
-    valves = d.getLinkValveIndex()
-    for i in range(len(valves)):
-        vIndex.append(valves[i]-1)
+    parts=[]
+    pIndex = d.getBinLinkPumpIndex()
+    vIndex = d.getBinLinkValveIndex()
 
-    ndlConn=d.getNodesConnectingLinksID()
-    if d.getLinkCount()>0:
-        p=0;v=0
-        linkInStatus=d.getLinkInitialStatus()
-        for i in range(0,d.getLinkCount()):
+    ndlConn=d.getBinNodesConnectingLinksID()
+    if nlinkCount>0:
+        stat=d.getBinLinkInitialStatus()
+        kk=0
+        for i in range(0,nlinkCount):
             if i in pIndex:
                 xx= (float(x1[i])+float(x2[i]))/2
                 yy= (float(y1[i])+float(y2[i]))/2
@@ -81,26 +80,23 @@ def epaShp(inpname):
                     XY=[]
                     if p==0:
                         linkIDFinal=linkID[i]+'_pump1'
-                        node1=ndlConn[i][0][0]
+                        node1=ndlConn[0][i]
                         node2=linkIDFinal
-                        indN1 = d.getNodeIndex(node1)
-                        XY.append(([float(x[indN1[0]-1]),float(y[indN1[0]-1])],[xx,yy]))
+                        indN1 = d.getBinNodeIndex(node1)
+                        XY.append(([float(x[indN1]),float(y[indN1])],[xx,yy]))
                     elif p==1:
                         linkIDFinal=linkID[i]+'_pump2'
                         node1=linkIDFinal
-                        node2=ndlConn[i][1][0]
-                        indN2 = d.getNodeIndex(node2)
+                        node2=ndlConn[1][i]
+                        indN2 = d.getBinNodeIndex(node2)
 
-                        XY.append(([xx,yy],[float(x[indN2[0]-1]),float(y[indN2[0]-1])]))
-                    stat='CLOSED'
-                    if linkInStatus[i]==1:
-                        stat='OPEN'
+                        XY.append(([xx,yy],[float(x[indN2]),float(y[indN2])]))
                     length=0
                     diameter=0
                     roughness=0
                     minorloss=0
                     wpipe.line(parts=[XY[0]])
-                    wpipe.record(linkIDFinal,node1,node2,length,diameter,stat,roughness,minorloss)
+                    wpipe.record(linkIDFinal,node1,node2,length,diameter,stat[i],roughness,minorloss)
             elif i in vIndex:
                 xx= (float(x1[i])+float(x2[i]))/2
                 yy= (float(y1[i])+float(y2[i]))/2
@@ -108,46 +104,42 @@ def epaShp(inpname):
                     XY=[]
                     if v==0:
                         linkIDFinal=linkID[i]+'_valve1'
-                        node1=ndlConn[i][0][0]
+                        node1=ndlConn[0][i]
                         node2=linkIDFinal
-                        indN1 = d.getNodeIndex(node1)
-                        XY.append(([float(x[indN1[0]-1]),float(y[indN1[0]-1])],[xx,yy]))
+                        indN1 = d.getBinNodeIndex(node1)
+                        XY.append(([float(x[indN1]),float(y[indN1])],[xx,yy]))
                     elif v==1:
                         linkIDFinal=linkID[i]+'_valve2'
                         node1=linkIDFinal
-                        node2=ndlConn[i][1][0]
-                        indN2 = d.getNodeIndex(node2)
+                        node2=ndlConn[1][i]
+                        indN2 = d.getBinNodeIndex(node2)
 
-                        XY.append(([xx,yy],[float(x[indN2[0]-1]),float(y[indN2[0]-1])]))
-                    stat='CLOSED'
-                    if linkInStatus[i]==1:
-                        stat='OPEN'
+                        XY.append(([xx,yy],[float(x[indN2]),float(y[indN2])]))
                     length=0
                     diameter=0
                     roughness=0
                     minorloss=0
                     wpipe.line(parts=[XY[0]])
-                    wpipe.record(linkIDFinal,node1,node2,length,diameter,stat,roughness,minorloss)
+                    wpipe.record(linkIDFinal,node1,node2,length,diameter,stat[i],roughness,minorloss)
             else:
-                linkID=d.getLinkNameID()
-                stat='CLOSED'
-                if linkInStatus[i]==1:
-                    stat='OPEN'
-                linkLengths=d.getLinkLength()
-                linkDiameters=d.getLinkDiameter()
-                linkRough=d.getLinkRoughnessCoeff()
-                linkMinorloss=d.getLinkMinorLossCoeff()
+                linkID=d.getBinLinkNameID()
+                linkLengths=d.getBinLinkLength()
+                linkDiameters=d.getBinLinkDiameter()
+                linkRough=d.getBinLinkRoughnessCoeff()
+                linkMinorloss=d.getBinLinkMinorLossCoeff()
                 point1 = [float(x1[i]),float(y1[i])]
                 point2 = [float(x2[i]),float(y2[i])]
                 if vertx[i]!=[]:
+                    parts=[]
                     parts.append(point1)
-                    for mm in range(len(vertxyFinal)):
-                        parts.append(vertxyFinal[mm])
+                    for mm in range(len(vertxyFinal[kk])):
+                        parts.append(vertxyFinal[kk][mm])
                     parts.append(point2)
                     wpipe.line(parts=[parts])
+                    kk=kk+1
                 else:
                     wpipe.line(parts=[[[float(x1[i]),float(y1[i])],[float(x2[i]),float(y2[i])]]])
-                wpipe.record(linkID[i],ndlConn[i][0][0],ndlConn[i][1][0],linkLengths[i],linkDiameters[i],stat,linkRough[i],linkMinorloss[i])
+                wpipe.record(linkID[i],ndlConn[0][i],ndlConn[1][i],linkLengths[i],linkDiameters[i],stat[i],linkRough[i],linkMinorloss[i])
         wpipe.save(res+inpname[:len(inpname)-4]+'_pipes')
 
     # Write Tank Shapefile
@@ -162,19 +154,19 @@ def epaShp(inpname):
     w.field('minimumvol','N',20)
     w.field('volumecurv','N',20)
 
-    if d.getNodeTankCount()>0:
-        ndTankelevation=d.getNodeElevations()
-        initiallev=d.getNodeTankInitialLevel()
-        minimumlev=d.getNodeTankMinimumWaterLevel()
-        maximumlev=d.getNodeTankMaximumWaterLevel()
-        diameter=d.getNodeTankDiameter()
-        minimumvol=d.getNodeTankMinimumWaterVolume()
-        volumecurv=d.getNodeTankVolumeCurveIndex()
-        ndID=d.getNodeNameID()
-        for i, nodetankindex in enumerate(d.getNodeTankIndex()):
-            p=nodetankindex-1
+    if d.getBinNodeTankCount()>0:
+        ndTankelevation=d.getBinNodeTankElevations()
+        initiallev=d.getBinNodeTankInitialLevel()
+        minimumlev=d.getBinNodeTankMinimumWaterLevel()
+        maximumlev=d.getBinNodeTankMaximumWaterLevel()
+        diameter=d.getBinNodeTankDiameter()
+        minimumvol=d.getBinNodeTankMinimumWaterVolume()
+        volumecurv=d.getBinNodeTankVolumeCurveID()
+        ndID=d.getBinNodeTankNameID()
+        for i, tankindex in enumerate(d.getBinNodeTankIndex()):
+            p=tankindex-1
             w.point(float(x[p]), float(y[p]))
-            w.record(ndID[p],ndTankelevation[p],initiallev[p],minimumlev[p],maximumlev[p],diameter[p],minimumvol[p],volumecurv[p])
+            w.record(ndID[i],ndTankelevation[i],initiallev[i],minimumlev[i],maximumlev[i],diameter[i],minimumvol[i],volumecurv[i])
         w.save(res+inpname[:len(inpname)-4]+'_tanks')
 
 
@@ -184,13 +176,13 @@ def epaShp(inpname):
     w.field('dc_id','C',254)
     w.field('head','N',20)
 
-    if d.getNodeReservoirCount()>0:
-        head=d.getNodeElevations()
-        ndID=d.getNodeNameID()
-        for i, nodereservoirindex in enumerate(d.getNodeReservoirIndex()):
+    if d.getBinNodeReservoirCount()>0:
+        head=d.getBinNodeReservoirElevations()
+        ndID=d.getBinNodeNameID()
+        for i, nodereservoirindex in enumerate(d.getBinNodeReservoirIndex()):
             p=nodereservoirindex-1
             w.point(float(x[p]), float(y[p]))
-            w.record(ndID[p],head[p])
+            w.record(ndID[p],head[i])
         w.save(res+inpname[:len(inpname)-4]+'_reservoirs')
 
     # Write Pump Shapefile
@@ -201,32 +193,43 @@ def epaShp(inpname):
     w.field('node2','C',254)
     w.field('head','C',254)
     w.field('flow','C',254)
-    w.field('power','N',20,9)
+    w.field('power','C',254)
+    w.field('pattern','C',254)
     w.field('curveID','C',254)
 
+    if d.getBinLinkPumpCount()>0:
+        chPowerPump=d.getBinLinkPumpPower()
+        cheadpump = d.getBinLinkPumpCurveNameID()
+        pumpID = d.getBinLinkPumpNameID()
+        patternsIDs=d.getBinLinkPumpPatterns()
+        ppatt=d.getBinLinkPumpPatternsPumpID()
+        linkID=d.getBinLinkNameID()
+        for i, p in enumerate(d.getBinLinkPumpIndex()):
+            Head=[];Flow=[];Curve=[];power=[];pattern=[]
+            pumpNameIDPower=d.getBinLinkPumpNameIDPower()
+            if len(pumpNameIDPower)>0:
+                for uu in range(0,len(pumpNameIDPower)):
+                    if pumpNameIDPower[uu]==pumpID[i]:
+                        power=chPowerPump[uu]
+            if len(patternsIDs)>0:
+                for uu in range(0,len(ppatt)):
+                    if ppatt[uu]==pumpID[i]:
+                        pattern=patternsIDs[uu]
 
-    if d.getLinkPumpCount()>0:
-        headc=d.getHeadCurveIndex()
-        chPowerPump=d.getLinkPumpPower()
-        linkID=d.getLinkNameID();power=[]
-        for i, pumpindex in enumerate(d.getLinkPumpIndex()):
-            Head=[];Flow=[];Curve=[]
-            if d.getCurveCount()>0:
-                curveXY = d.getCurvesInfo()
-                curveXYF = curveXY[headc[i]-1]
-
-                for i in range(len(curveXYF)):
-                    Head.append(curveXYF[i][2])
-                    Flow.append(curveXYF[i][3])
-                Curve=curveXYF[0][0]
-                p=pumpindex-1
+            if d.getBinCurveCount()>0 and len(pumpNameIDPower)==0:
+                curveXY = d.getBinCurvesXY()
+                curvesID = d.getBinCurvesNameID()
+                for uu in range(0,len(curveXY)):
+                    if curvesID[uu]==cheadpump[i]:
+                        Head.append(curveXY[uu][0])
+                        Flow.append(curveXY[uu][1])
+                Curve=d.getBinLinkPumpCurveNameID()[i]
                 xx= (float(x1[p])+float(x2[p]))/2
                 yy= (float(y1[p])+float(y2[p]))/2
                 w.point(xx,yy)
                 wpipe.line(parts=[[[float(x1[p]),float(y1[p])],[float(x2[p]),float(y2[p])]]])
 
             else:
-                power=chPowerPump[i][1]
                 xx= (float(x1[p])+float(x2[p]))/2
                 yy= (float(y1[p])+float(y2[p]))/2
                 w.point(xx,yy)
@@ -237,7 +240,11 @@ def epaShp(inpname):
                 Flow='NULL'
             if Curve==[]:
                 Curve='NULL'
-            w.record(linkID[p],ndlConn[p][0][0],ndlConn[p][1][0],Head,Flow,power,Curve)
+            if power==[]:
+                power='NULL'
+            if pattern==[]:
+                pattern='NULL'
+            w.record(linkID[p],ndlConn[0][p],ndlConn[1][p],Head,Flow,power,pattern,Curve)
         w.save(res+inpname[:len(inpname)-4]+'_pumps')
 
     # Write Valve Shapefile
@@ -251,21 +258,16 @@ def epaShp(inpname):
     w.field('setting','N',20,9)
     w.field('minorloss','N',20,9)
 
-    if d.getLinkValveCount()>0:
-        linkID=d.getLinkNameID()
-        linkType=d.getLinkType()
-        print linkType
-        linkDiameter=d.getLinkDiameter()
-        linkInitSett=d.getLinkInitialSetting()
-        linkMinorloss=d.getLinkMinorLossCoeff()
-        for i, valveindex in enumerate(d.getLinkValveIndex()):
-            p=valveindex-1
+    if d.getBinLinkValveCount()>0:
+        linkID=d.getBinLinkValveNameID()
+        linkType=d.getBinLinkValveType()  # valve type
+        linkDiameter=d.getBinLinkValveDiameters()
+        linkInitSett=d.getBinLinkValveSetting() #BinLinkValveSetting
+        linkMinorloss=d.getBinLinkValveMinorLoss()
+        for i, p in enumerate(d.getBinLinkValveIndex()):
             xx= (float(x1[p])+float(x2[p]))/2
             yy= (float(y1[p])+float(y2[p]))/2
             w.point(xx,yy)
-            w.record(linkID[p],ndlConn[p][0][0],ndlConn[p][1][0],linkDiameter[p],linkType[p],linkInitSett[p],linkMinorloss[p])
+            w.record(linkID[i],ndlConn[0][p],ndlConn[1][p],linkDiameter[i],linkType[i],linkInitSett[i],linkMinorloss[i])
         w.save(res+inpname[:len(inpname)-4]+'_valves')
-    #pp=file_extension + '/'+ inpname
-    #ppp=pp[:len(pp)-4]+'.txt'
-    d.ENclose()
-    #os.remove( ppp )
+
