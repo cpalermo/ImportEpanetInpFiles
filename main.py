@@ -1,11 +1,10 @@
 #(C)Marios Kyriakou 2016
 #University of Cyprus, KIOS Research Center for Intelligent Systems and Networks
-import qgis.utils, os
-from Epa2Shp import epaShp
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
-from qgis.gui import *
+#import qgis.utils
+import os
+from Epa2GIS import epa2gis
+from PyQt4.QtCore import QObject, SIGNAL
+from PyQt4.QtGui import QAction, QIcon, QFileDialog, QMessageBox
 import resources_rc
 
 class ImpEpanet(object):
@@ -30,58 +29,58 @@ class ImpEpanet(object):
     filePath = QFileDialog.getOpenFileName(self.iface.mainWindow(),"Choose EPANET Input file" , os.getcwd(), "Epanet Inp File (*.inp)")
     if filePath == "":
       return
-    epaShp(filePath)
+    idx = epa2gis(filePath)
     file_extension = os.path.dirname(filePath)
     res = file_extension + '/_shapefiles_/'
     inpname = os.path.basename(filePath)
-    if inpname.index('.') != len(inpname)-4:
-        qgis.utils.iface.messageBar().clearWidgets()
-        msgBox = QMessageBox()
-        msgBox.setWindowTitle('ImportEpanetInpFiles')
-        msgBox.setText('Warning name of input file.')
-        msgBox.exec_()
-        return
-
     shpfiles = []
     for dirpath, subdirs, files in os.walk(res):
         for x in files:
             if x.endswith(".shp"):
                 shpfiles.append(os.path.join(dirpath, x))
     inp = res + inpname
-    a1=inp[:len(inp)-4]+'_junctions.shp'
-    a2=inp[:len(inp)-4]+'_reservoirs.shp'
-    a3=inp[:len(inp)-4]+'_tanks.shp'
-    a4=inp[:len(inp)-4]+'_pipes.shp'
-    a5=inp[:len(inp)-4]+'_pumps.shp'
-    a6=inp[:len(inp)-4]+'_valves.shp'
-    iface=qgis.utils.iface
+    iface=self.iface
+
     # get python path plugin
     #getPathPlugin = os.path.dirname(os.path.realpath(__file__))+"\\"
-    for i in range(0,len(shpfiles)):
-      if a1==shpfiles[i]:#junctions
-          l1=iface.addVectorLayer(shpfiles[i], inpname[:len(inpname)-4]+"_junctions", "ogr")
-          #l1.loadNamedStyle(getPathPlugin+"junctions.qml")
-      if a2==shpfiles[i]:#reservoirs
-          l2=iface.addVectorLayer(shpfiles[i], inpname[:len(inpname)-4]+"_reservoirs", "ogr")
-          #l2.loadNamedStyle(getPathPlugin+"reservoirs.qml")
-      if a3==shpfiles[i]:#tanks
-          l3=iface.addVectorLayer(shpfiles[i], inpname[:len(inpname)-4]+"_tanks", "ogr")
-          #l3.loadNamedStyle(getPathPlugin+"tanks.qml")
-      if a4==shpfiles[i]:#pipes
-          l3=iface.addVectorLayer(shpfiles[i], inpname[:len(inpname)-4]+"_pipes", "ogr")
-          #l3.loadNamedStyle(getPathPlugin+"pipes.qml")
-      if a5==shpfiles[i]:#pumps
-          l4=iface.addVectorLayer(shpfiles[i], inpname[:len(inpname)-4]+"_pumps", "ogr")
-          #l4.loadNamedStyle(getPathPlugin+"pumps.qml")
-      if a6==shpfiles[i]:#valves
-          l5=iface.addVectorLayer(shpfiles[i], inpname[:len(inpname)-4]+"_valves", "ogr")
-          #l5.loadNamedStyle(getPathPlugin+"valves.qml")
-      #iface.actionToggleEditing().trigger()
-      #iface.actionToggleEditing().trigger()
-    #clear warnings
-
-
-    qgis.utils.iface.messageBar().clearWidgets()
+    try:
+        l4=iface.addVectorLayer(shpfiles[shpfiles.index(inp[:len(inp)-4]+'_pipes.shp')], inpname[:len(inpname)-4]+"_pipes", "ogr")
+        iface.legendInterface().moveLayer( l4, idx )
+        #l4.loadNamedStyle(getPathPlugin+"pipes.qml")
+    except:
+        pass
+    try:
+        l2=iface.addVectorLayer(shpfiles[shpfiles.index(inp[:len(inp)-4]+'_reservoirs.shp')], inpname[:len(inpname)-4]+"_reservoirs", "ogr")
+        iface.legendInterface().moveLayer( l2, idx )
+        #l2.loadNamedStyle(getPathPlugin+"reservoirs.qml")
+    except:
+        pass
+    try:
+        l3=iface.addVectorLayer(shpfiles[shpfiles.index(inp[:len(inp)-4]+'_tanks.shp')], inpname[:len(inpname)-4]+"_tanks", "ogr")
+        iface.legendInterface().moveLayer( l3, idx )
+        #l3.loadNamedStyle(getPathPlugin+"tanks.qml")
+    except:
+        pass
+    try:
+        l5=iface.addVectorLayer(shpfiles[shpfiles.index(inp[:len(inp)-4]+'_pumps.shp')], inpname[:len(inpname)-4]+"_pumps", "ogr")
+        iface.legendInterface().moveLayer( l5, idx )
+        #l5.loadNamedStyle(getPathPlugin+"pumps.qml")
+    except:
+        pass
+    try:
+        l6=iface.addVectorLayer(shpfiles[shpfiles.index(inp[:len(inp)-4]+'_valves.shp')], inpname[:len(inpname)-4]+"_valves", "ogr")
+        iface.legendInterface().moveLayer( l6, idx )
+        #l6.loadNamedStyle(getPathPlugin+"valves.qml")
+    except:
+        pass
+    try:
+        l1=iface.addVectorLayer(shpfiles[shpfiles.index(inp[:len(inp)-4]+'_junctions.shp')], inpname[:len(inpname)-4]+"_junctions", "ogr")
+        iface.legendInterface().moveLayer( l1, idx )
+        #l1.loadNamedStyle(getPathPlugin+"junctions.qml")
+    except:
+        pass
+    #QgsMessageLog.logMessage("Shapefiles have been created successfully in folder _shapefiles_.")
+    iface.messageBar().clearWidgets()
     msgBox = QMessageBox()
     msgBox.setWindowTitle('ImportEpanetInpFiles')
     msgBox.setText('Shapefiles have been created successfully in folder "_shapefiles_".')

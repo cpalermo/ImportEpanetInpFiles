@@ -7,22 +7,18 @@ def LoadFile(inp):
     #inpname = getPathPlugin + inp
     inpname = inp
 
-def BinUpdateClass():
+def BinUpdateClass(pb):
     global mm
-    mm = getBinInfo()
+    mm = getBinInfo(pb)
     return mm
 
 ## get Info
 def getBinNodeReservoirIndex():
-    ind=[]
-    for i in range(getBinNodeJunctionCount()+1,getBinNodeJunctionCount()+getBinNodeReservoirCount()+1):
-        ind.append(i)
+    ind=range(getBinNodeJunctionCount()+1,getBinNodeJunctionCount()+getBinNodeReservoirCount()+1)
     return ind
 
 def getBinNodeTankIndex():
-    ind=[]
-    for i in range(getBinNodeJunctionCount()+getBinNodeReservoirCount()+1,getBinNodeCount()+1):
-        ind.append(i)
+    ind=range(getBinNodeJunctionCount()+getBinNodeReservoirCount()+1,getBinNodeCount()+1)
     return ind
 
 def getBinNodeDemandPatternID():
@@ -288,9 +284,77 @@ def getBinCurveCount():
     global mm
     return len(set(mm[36]))
 
+def getDemandsSection():
+    global mm
+    return mm[44]
+
+def getStatusSection():
+    global mm
+    return mm[45]
+
+def getEmittersSection():
+    global mm
+    return mm[46]
+
+def getControlsSection():
+    global mm
+    return mm[47]
+
+def getPatternsSection():
+    global mm
+    return mm[48]
+
+def getCurvesSection():
+    global mm
+    return mm[49],mm[50]
+
+def getQualitySection():
+    global mm
+    return mm[51]
+
+def getRulesSection():
+    global mm
+    return mm[52]
+
+def getSourcesSection():
+    global mm
+    return mm[53]
+
+def getEnergySection():
+    global mm
+    return mm[54]
+
+def getReactionsSection():
+    global mm
+    return mm[55]
+
+def getReactionsOptionsSection():
+    global mm
+    return mm[56]
+
+def getMixingSection():
+    global mm
+    return mm[57]
+
+def getTimesSection():
+    global mm
+    return mm[58]
+
+def getOptionsSection():
+    global mm
+    return mm[59]
+
+def getReportSection():
+    global mm
+    return mm[60]
+
+def getLabelsSection():
+    global mm
+    return mm[61]
+
 
 # Get all info
-def getBinInfo():
+def getBinInfo(pb):
     global inpname
     file = open(inpname,'r')
 
@@ -340,42 +404,43 @@ def getBinInfo():
     BinCurvesNameID=[]
     BinCurvesXY=[]
 
+    #Sections
+    demandsSection=[]
+    statusSection=[]
+    emittersSection=[]
+    controlsSection=[]
+    patternsSection=[]
+    curvesSection=[]
+    curvesSectionType=[]
+    qualitySection=[]
+    rulesSection=[]; rules=[]
+    sourcesSection=[]
+    energySection=[]
+    reactionsSection=[]
+    reactionsOptionSection=[]
+    mixingSection=[]
+    timesSection=[]
+    optionsSection=[]
+    reportSection=[]
+    labelsSection=[]
+
     s1=file.readline()
-    num=11;sec=[0]*num
+    num=13;sec=[0]*num
     x=[]
     y=[]
     # Create a list.
     vertx=[];verty=[]
     # Append empty lists in first two indexes.
-    sec2=[0]*2
+    sec2=[0]*num;ch1=0;ch=1
+    pb.setValue(2)
     while True:
         if "[" in s1:
             pass
         else:
             s1=file.readline()
-        sec[6]=0; ok=0
+        ok=0
         if "[END]" in s1:
-            lcnt=len(BinLinkPipeNameID)+len(BinLinkPumpNameID)+len(BinLinkValveNameID)
-            for i in range(len(BinLinkInitialStatus)+1,lcnt+1):
-                BinLinkInitialStatus.append('OPEN')
-            x1 = []
-            y1 = []
-            x2 = []; ToNode = []
-            y2 = []; FromNode = []
-            NodesConnectingLinksID = [BinLinkFromNode, BinLinkToNode]
-            node=[]
-            nodenameid = nodeJunctionNameID + nodeReservoirNameID +BinNodeTankNameID
-            for i in range(lcnt):
-                node.append([nodenameid.index(NodesConnectingLinksID[0][i]),nodenameid.index(NodesConnectingLinksID[1][i])])
-            for i in range(0,lcnt):
-                fr = node[i][0]
-                FromNode.append(fr)
-                t0 = node[i][1]
-                ToNode.append(t0)
-                x1.append(x[FromNode[i]])
-                y1.append(y[FromNode[i]])
-                x2.append(x[ToNode[i]])
-                y2.append(y[ToNode[i]])
+            pb.setValue(10)
             file.close()
             return [nodeJunctionNameID, nodeJunctionElevations, nodeJunctionBaseDemands, nodePatternNameID, len(nodeJunctionNameID),#01234
                     nodeReservoirNameID, nodeReservoirElevations, len(nodeReservoirNameID),#567
@@ -385,7 +450,10 @@ def getBinInfo():
                     BinLinkValveNameID, BinLinkValveDiameters, BinLinkValveType, BinLinkValveSetting, BinLinkValveMinorLoss, #27#28#29#30#31
                     BinLinkInitialStatus, BinLinkInitialStatusNameID, BincountStatuslines, BinNodeTankVolumeCurveID, #32#33#34#35
                     BinCurvesNameID, BinCurvesXY, BinLinkPumpSpeed, BinLinkPumpPatternsPumpID, #36#37#38#39
-                    x,y,x1,y1,x2,y2,vertx,verty] #40#41#42#43#44#45#46#47
+                    x,y,vertx,verty, #40#41#42#43
+                    demandsSection,statusSection,emittersSection,controlsSection,patternsSection,curvesSection,curvesSectionType,#44#45#46#47#48#49#50
+                    qualitySection,rulesSection,sourcesSection,energySection,reactionsSection,reactionsOptionSection,mixingSection,#51#52#53#54#55#56#57
+                    timesSection,optionsSection,reportSection,labelsSection]#58#59#60#61
 
         elif "[JUNCTIONS]" in s1:
             sec[0]=1;s1=file.readline(); pass
@@ -400,7 +468,7 @@ def getBinInfo():
         elif "[VALVES]" in s1:
             sec=[0]*num;sec[5]=1;s1=file.readline()
         if "[STATUS]" in s1:
-            sec=[0]*num;sec[7]=1;s1=file.readline()
+            sec=[0]*num;sec2=[0]*num;sec[7]=1;s1=file.readline()
             for i in range(0,len(BinLinkPipeNameID)+len(BinLinkPumpNameID)+len(BinLinkValveNameID)):
                 vertx.append([])
                 verty.append([])
@@ -410,19 +478,46 @@ def getBinInfo():
         elif  ("[JUNCTIONS]" in s1 or "[RESERVOIRS]" in s1 or "[TANKS]" in s1 or "[PIPES]" in s1 or "[PUMPS]" in s1 or "[VALVES]" in s1):
             ok=1
         elif "[TAGS]" in s1 and ok==0:
-            sec=[0]*num;sec[6]=1;s1=file.readline()
-        elif "[PATTERNS]" in s1:
             sec=[0]*num;s1=file.readline()
+        elif "[PATTERNS]" in s1:
+            sec=[0]*num;sec[6]=1;s1=file.readline()
         elif "[CURVES]" in s1:
             sec=[0]*num;sec[9]=1;s1=file.readline()
         elif "[CONTROLS]" in s1:
             sec=[0]*num;sec[10]=1;s1=file.readline()
         elif "[COORDINATES]" in s1:
-            sec2[0]=1;s1=file.readline()
+            sec2=[0]*num;sec2[0]=1;s1=file.readline()
+            pb.setValue(5)
         elif "[VERTICES]" in s1:
-            sec2[0]=0;sec2[1]=1;s1=file.readline()
+            pb.setValue(7)
+            sec2=[0]*num;sec2[1]=1;s1=file.readline()
         elif "[LABELS]" in s1:
-            sec2[1]=0;s1=file.readline()
+            sec2=[0]*num;sec2[12]=1;s1=file.readline()
+        elif "[EMITTERS]" in s1:
+            sec2=[0]*num;sec2[2]=1;s1=file.readline()
+        elif "[RULES]" in s1:
+            sec=[0]*num;sec2=[0]*num;sec2[3]=1;s1=file.readline()
+        elif "[ENERGY]" in s1:
+            sec2=[0]*num;sec2[6]=1
+            if rules!=[]:
+                rulesSection.append(rules)
+            s1=file.readline()
+        elif "[QUALITY]" in s1:
+            sec2=[0]*num;sec=[0]*num;sec2[4]=1;s1=file.readline()
+        elif "[SOURCES]" in s1:
+            sec2=[0]*num;sec2[5]=1;s1=file.readline()
+        elif "[REACTIONS]" in s1:
+            sec2=[0]*num;sec2[7]=1;s1=file.readline()
+        elif "[MIXING]" in s1:
+            sec2=[0]*num;sec2[8]=1;s1=file.readline()
+        elif "[TIMES]" in s1:
+            sec2=[0]*num;sec2[9]=1;s1=file.readline()
+        elif "[REPORT]" in s1:
+            sec2=[0]*num;sec2[10]=1;s1=file.readline()
+        elif "[OPTIONS]" in s1:
+            sec2=[0]*num;sec2[11]=1;s1=file.readline()
+        elif "[BACKDROP]" in s1:
+            sec2=[0]*num;s1=file.readline()
         elif "[" in s1:
             s1=file.readline()
 
@@ -444,7 +539,7 @@ def getBinInfo():
                         else:
                             nodePatternNameID.append('')
                     else:
-                            nodePatternNameID.append('')
+                        nodePatternNameID.append('')
 
         if sec[1]==1: #RESERVOIRS
             if "[" in s1:
@@ -564,6 +659,16 @@ def getBinInfo():
                         if mm[6][0]!=';':
                             BinLinkValveMinorLoss.append(float(mm[6]))
 
+        if sec[6]==1: #PATTERNS
+            if "[" in s1:
+                continue
+            mm=s1.split()
+            if len(mm)>1:
+                if mm[0][0]==';':
+                    pass
+                else:
+                    patternsSection.append([mm[0],' '.join(mm[1:])])
+
         if sec[7]==1: #STATUS
             if "[" in s1:
                 continue
@@ -572,6 +677,7 @@ def getBinInfo():
                 if mm[0][0]==';':
                     pass
                 else:
+                    statusSection.append(mm)
                     BinLinkInitialStatusNameID.append(mm[0])
                     if mm[1]=='Open':
                         BinLinkInitialStatus.append('OPEN')
@@ -587,10 +693,33 @@ def getBinInfo():
                 if mm[0][0]==';':
                     pass
                 else:
-                    if len(mm)>1:
-                        nodeJunctionBaseDemands.append(float(mm[1]))
+                    nodeJunctionBaseDemands.append(float(mm[1]))
+                    demandsSection.append(mm)
 
         if sec[9]==1: #CURVES
+            if "[" in s1:
+                continue
+            mm=s1.split()
+            if len(mm)>1:
+                if mm[0]==';ID':
+                    continue
+                elif ";PUMP:" in mm[0].upper():
+                    curvesSectionType.append('PUMP')
+                elif ";EFFICIENCY:" in mm[0].upper():
+                    curvesSectionType.append('EFFICIENCY')
+                elif ";VOLUME:" in mm[0].upper():
+                    curvesSectionType.append('VOLUME')
+                elif ";HEADLOSS:" in mm[0].upper():
+                    curvesSectionType.append('HEADLOSS')
+                else:
+                    curvesSectionType.append('PUMP')
+                #else:
+                if mm[0][0]!=';':
+                    curvesSection.append(mm)
+                    BinCurvesNameID.append(mm[0])
+                    BinCurvesXY.append([float(mm[1]),float(mm[2])])
+
+        if sec[10]==1: #CONTROLS
             if "[" in s1:
                 continue
             mm=s1.split()
@@ -598,11 +727,9 @@ def getBinInfo():
                 if mm[0][0]==';':
                     pass
                 else:
-                    if len(mm)>1:
-                        BinCurvesNameID.append(mm[0])
-                        BinCurvesXY.append([float(mm[1]),float(mm[2])])
+                    controlsSection.append(' '.join(mm))
 
-        if sec2[0]==1:
+        if sec2[0]==1: #COORDINATES
             if "[" in s1:
                 continue
             mm=s1.split()
@@ -611,7 +738,7 @@ def getBinInfo():
                     x.append(float(mm[1]))
                     y.append(float(mm[2]))
 
-        if sec2[1]==1:
+        if sec2[1]==1: #VERTICES
             if "[" in s1:
                 continue
             mm=s1.split()
@@ -620,10 +747,135 @@ def getBinInfo():
                     linkIndex = linknameid.index(mm[0])
                     vertx[linkIndex].append(float(mm[1]))
                     verty[linkIndex].append(float(mm[2]))
+
+
+        if sec2[2]==1: #EMITTERS
+            if "[" in s1:
+                continue
+            mm=s1.split()
+            if len(mm)>1:
+                if mm[0][0]==';':
+                    pass
+                else:
+                    emittersSection.append(mm)
+
+        if sec2[3]==1: #RULES
+            if "[" in s1:
+                continue
+            mm=s1.split()
+            if len(mm)>1:
+                if mm[0][0]==';':
+                    pass
+                else:
+                    if "RULE" in mm[0].upper():
+                        if (rules!=[] or ch==0):
+                            rulesSection.append(rules); ch=0
+                            rules=[]
+                            rules.append([s1,mm])
+                        else:
+                            rules.append([s1,mm])
+                    else:
+                        rules.append([s1,mm])
+
+
+        if sec2[4]==1: #QUALITY
+            if "[" in s1:
+                continue
+            mm=s1.split()
+            if len(mm)>1:
+                if mm[0][0]==';':
+                    pass
+                else:
+                    qualitySection.append(mm)
+
+        if sec2[5]==1: #SOURCES
+            if "[" in s1:
+                continue
+            mm=s1.split()
+            if len(mm)>1:
+                if mm[0][0]==';':
+                    pass
+                else:
+                    sourcesSection.append(mm)
+
+        if sec2[6]==1: #ENERGY
+            if "[" in s1:
+                continue
+            mm=s1.split()
+            if len(mm)>1:
+                if mm[0][0]==';':
+                    pass
+                else:
+                    energySection.append(mm)
+
+        if sec2[7]==1: #REACTIONS
+            if "[" in s1:
+                continue
+            mm=s1.split()
+            if len(mm)>1:
+                if mm[0][0]==';':
+                    pass
+                else:
+                    if ("ORDER" in mm[0].upper() and ch1==0) or ch1==1:
+                        reactionsOptionSection.append(mm);ch1=1
+                    else:
+                        reactionsSection.append(mm)
+
+        if sec2[8]==1: #MIXING
+            if "[" in s1:
+                continue
+            mm=s1.split()
+            if len(mm)>1:
+                if mm[0][0]==';':
+                    pass
+                else:
+                    mixingSection.append(mm)
+
+        if sec2[9]==1: #TIMES
+            if "[" in s1:
+                continue
+            mm=s1.split()
+            if len(mm)>1:
+                if mm[0][0]==';':
+                    pass
+                else:
+                    timesSection.append(mm)
+
+        if sec2[10]==1: #REPORT
+            if "[" in s1:
+                continue
+            mm=s1.split()
+            if len(mm)>1:
+                if mm[0][0]==';':
+                    pass
+                else:
+                    reportSection.append(mm)
+
+        if sec2[11]==1: #OPTIONS
+            if "[" in s1:
+                continue
+            mm=s1.split()
+            if len(mm)>1:
+                if mm[0][0]==';':
+                    pass
+                else:
+                    optionsSection.append(mm)
+
+        if sec2[12]==1: #LABELS
+            if "[" in s1:
+                continue
+            mm=s1.split()
+            if len(mm)>1:
+                if mm[0][0]==';':
+                    pass
+                else:
+                    labelsSection.append(mm)
+
+
 ## Node Coordinates
 def getBinNodeCoordinates():
     global mm
-    return mm[40],mm[41],mm[42],mm[43],mm[44],mm[45],mm[46],mm[47]
+    return mm[40],mm[41],mm[42],mm[43]#,mm[44],mm[45],mm[46],mm[47]
     #x,y,x1,y1,x2,y2,vertx,verty] #40#41#42#43#44#45#46#47
 
 EN_ELEVATION     = 0      # /* Node parameters */
