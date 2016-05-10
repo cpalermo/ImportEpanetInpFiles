@@ -19,7 +19,6 @@ def epa2gis(inpname):
         os.makedirs(newpath)
 
     iface=qgis.utils.iface
-
     d.LoadFile(inp)
     msgBar= iface.messageBar()
     pb= QProgressBar()
@@ -29,7 +28,6 @@ def epa2gis(inpname):
     nlinkCount=d.getBinLinkCount()
     res = newpath + '\\'
     saveFile=res+inpname[:len(inpname)-4]
-
     pb.setValue(14)
     #iface.messageBar().clearWidgets()
 
@@ -47,35 +45,16 @@ def epa2gis(inpname):
     demands = d.getDemandsSection()
     energy = d.getEnergySection()
     optReactions = d.getReactionsOptionsSection()
-
     times = d.getTimesSection()
     report = d.getReportSection()
     options = d.getOptionsSection()
 
     #Get all Section lengths
-    allSections=[0]*20
-    allSections[0]=len(energy)
-    allSections[1]=len(optReactions)
-    allSections[2]=len(demands)
-    allSections[3]=len(status)
-    allSections[4]=len(emitters)
-    allSections[5]=len(controls)
-    allSections[6]=len(patterns)
-    allSections[7]=len(curves[0])
-    allSections[8]=len(quality)
-    allSections[9]=len(rules)
-    allSections[10]=len(sources)
-    allSections[11]=len(reactions)
-    allSections[12]=len(mixing)
-    allSections[13]=len(times)
-    allSections[14]=len(report)
-    allSections[15]=len(options)
-    allSections[16]=d.getBinNodeCount()
-    allSections[17]=d.getBinLinkCount()
+    allSections=[len(energy),len(optReactions),len(demands),len(status),len(emitters),len(controls),len(patterns),
+                 len(curves[0]),len(quality),len(rules),len(sources),len(reactions),len(mixing),len(times),len(report),
+                 len(options),d.getBinNodeCount(),d.getBinLinkCount()]
     ss=max(allSections)
-
     idx = iface.legendInterface().addGroup(inpname[:len(inpname)-4])
-
     xy=d.getBinNodeCoordinates()
     pb.setValue(15)
     x=xy[0]
@@ -156,64 +135,6 @@ def epa2gis(inpname):
         wReservoirs.field('head','N',20)
         head=d.getBinNodeReservoirElevations()
 
-    if optReactions!=[]:
-        posO = QgsVectorLayer("point", "Times", "memory")
-        prO = posO.dataProvider()
-    if mixing!=[]:
-        posMix = QgsVectorLayer("point", "Mixing", "memory")
-        prMix = posMix.dataProvider()
-        prMix.addAttributes( [ QgsField("Tank_ID", QVariant.String) ] )
-        prMix.addAttributes( [ QgsField("Model", QVariant.String) ] )
-        prMix.addAttributes( [ QgsField("Fraction", QVariant.Double) ] )
-    if reactions!=[]:
-        posReact = QgsVectorLayer("point", "ReactionsInfo", "memory")
-        prReact = posReact.dataProvider()
-        prReact.addAttributes( [ QgsField("Type", QVariant.String) ] )
-        prReact.addAttributes( [ QgsField("Pipe/Tank", QVariant.String) ] )
-        prReact.addAttributes( [ QgsField("Coeff.", QVariant.Double) ] )
-    if sources!=[]:
-        posSourc = QgsVectorLayer("point", "Sources", "memory")
-        prSourc = posSourc.dataProvider()
-        prSourc.addAttributes( [ QgsField("Node_ID", QVariant.String) ] )
-        prSourc.addAttributes( [ QgsField("Type", QVariant.String) ] )
-        prSourc.addAttributes( [ QgsField("Strength", QVariant.Double) ] )
-        prSourc.addAttributes( [ QgsField("Pattern", QVariant.String) ] )
-    if rules!=[] and len(rules[0])>3:
-        posRul = QgsVectorLayer("point", "Sources", "memory")
-        prRul = posRul.dataProvider()
-        prRul.addAttributes( [ QgsField("Rule_ID", QVariant.String) ] )
-        prRul.addAttributes( [ QgsField("Rule", QVariant.String) ] )
-    if quality!=[]:
-        posQual = QgsVectorLayer("point", "Sources", "memory")
-        prQual = posQual.dataProvider()
-        prQual.addAttributes( [ QgsField("Node_ID", QVariant.String) ] )
-        prQual.addAttributes( [ QgsField("Init_Qual", QVariant.Double) ] )
-    if curves[0]!=[]:
-        wCurv = shapefile.Writer(shapefile.POINT)
-        wCurv.field('Curve_ID','C',254)
-        wCurv.field('X-Value','C',254)
-        wCurv.field('Y-Value','C',254)
-        wCurv.field('Type','C',254)
-    if patterns!=[]:
-        wPat = shapefile.Writer(shapefile.POINT)
-        wPat.field('Pattern_ID','C',254)
-        wPat.field('Multipliers','C',254)
-    if controls!=[]:
-        wCont = shapefile.Writer(shapefile.POINT)
-        wCont.field('Controls','C',254)
-    if emitters!=[]:
-        wEmit = shapefile.Writer(shapefile.POINT)
-        wEmit.field('Junc_ID','C',254)
-        wEmit.field('Coeff.','N',20,9)
-    if status!=[]:
-        wStat = shapefile.Writer(shapefile.POINT)
-        wStat.field('Link_ID','C',254)
-        wStat.field('Status/Setting','C',254)
-    if demands!=[]:
-        wDem = shapefile.Writer(shapefile.POINT)
-        wDem.field('ID','C',254)
-        wDem.field('Demand','N',20,9)
-        wDem.field('Pattern','C',254)
     if times!=[]:
         posTimes = QgsVectorLayer("point", "Times", "memory")
         prTimes = posTimes.dataProvider()
@@ -226,10 +147,13 @@ def epa2gis(inpname):
     if options!=[]:
         posOpt = QgsVectorLayer("point", "Options", "memory")
         prOpt = posOpt.dataProvider()
+    if optReactions!=[]:
+        posO = QgsVectorLayer("point", "Reactions", "memory")
+        prO = posO.dataProvider()
 
     ppE=[];ppO=[];ppTimes=[];ppRep=[];ppOpt=[]
-    ppMix=[];ppReactions=[];ppSourc=[];ppRul=[]
-    ppQual=[]
+    ppMix=[];ppReactions=[];ppSourc=[];ppRul=[];ppPat=[]
+    ppQual=[];ppDem=[];ppStat=[];ppEmit=[];ppCont=[];ppCurv=[]
     vvLink=68;bbLink=1
     for i in range(ss):
         if i<d.getBinNodeJunctionCount():
@@ -338,23 +262,17 @@ def epa2gis(inpname):
         if i<allSections[8]:
             ppQual.append([quality[i][0],quality[i][1]])
         if i<allSections[7]:
-            wCurv.point(0,0)
-            wCurv.record(str(curves[0][i][0]),str(curves[0][i][1]),str(curves[0][i][2]),str(curves[1][i]))
+            ppCurv.append([str(curves[0][i][0]),str(curves[0][i][1]),str(curves[0][i][2]),str(curves[1][i])])
         if i<allSections[6]:
-            wPat.point(0,0)
-            wPat.record(patterns[i][0],str(patterns[i][1]))
+            ppPat.append([patterns[i][0],str(patterns[i][1])])
         if i<allSections[5]:
-            wCont.point(0,0)
-            wCont.record(controls[i])
+            ppCont.append([controls[i]])
         if i<allSections[4]:
-            wEmit.point(0,0)
-            wEmit.record(emitters[i][0],emitters[i][1])
+            ppEmit.append([emitters[i][0],emitters[i][1]])
         if i<allSections[3]:
-            wStat.point(0,0)
-            wStat.record(status[i][0],status[i][1])
+            ppStat.append([status[i][0],status[i][1]])
         if i<allSections[2]:
-            wDem.point(0,0)
-            wDem.record(demands[i][0],demands[i][1],demands[i][2])
+            ppDem.append([demands[i][0],demands[i][1],demands[i][2]])
         if i<allSections[0]:
             mm = energy[i][0]
             if mm.upper()=="GLOBAL":
@@ -572,35 +490,97 @@ def epa2gis(inpname):
         wReservoirs.save(saveFile+'_reservoirs')
 
     if options!=[]:
-        writeDBF2(posOpt,[ppOpt],prOpt,saveFile,inpname, "_OPTIONS", iface,idx)
+        writeDBF(posOpt,[ppOpt],prOpt,saveFile,inpname, "_OPTIONS", iface,idx)
 
     if report!=[]:
-        writeDBF2(posRep,[ppRep],prRep,saveFile,inpname, "_REPORT", iface,idx)
+        writeDBF(posRep,[ppRep],prRep,saveFile,inpname, "_REPORT", iface,idx)
 
     if times!=[]:
-        writeDBF2(posTimes,[ppTimes],prTimes,saveFile,inpname, "_TIMES", iface,idx)
+        writeDBF(posTimes,[ppTimes],prTimes,saveFile,inpname, "_TIMES", iface,idx)
 
     if energy!=[]:
-        writeDBF2(posE,[ppE],prE,saveFile,inpname, "_ENERGY", iface,idx)
+        writeDBF(posE,[ppE],prE,saveFile,inpname, "_ENERGY", iface,idx)
 
     if optReactions!=[]:
-        writeDBF2(posO,[ppO],prO,saveFile,inpname, "_REACTIONS", iface,idx)
+        writeDBF(posO,[ppO],prO,saveFile,inpname, "_REACTIONS", iface,idx)
 
     if mixing!=[]:
-        writeDBF2(posMix,ppMix,prMix,saveFile,inpname, "_MIXING", iface,idx)
+        posMix = QgsVectorLayer("point", "Mixing", "memory")
+        prMix = posMix.dataProvider()
+        fields=["Tank_ID","Model","Fraction"]
+        fieldsCode=[0,0,1] #0 String, 1 Double
+        createColumnsAttrb(prMix,fields,fieldsCode)
+        writeDBF(posMix,ppMix,prMix,saveFile,inpname, "_MIXING", iface,idx)
 
     if reactions!=[]:
-        writeDBF2(posReact,ppReactions,prReact,saveFile,inpname, "_REACTIONSinfo", iface,idx)
+        posReact = QgsVectorLayer("point", "ReactionsInfo", "memory")
+        prReact = posReact.dataProvider()
+        fields=["Type","Pipe/Tank","Coeff."]; fieldsCode=[0,0,1]
+        createColumnsAttrb(prReact,fields,fieldsCode)
+        writeDBF(posReact,ppReactions,prReact,saveFile,inpname, "_REACTIONSinfo", iface,idx)
 
     if sources!=[]:
-        writeDBF2(posSourc,ppSourc,prSourc,saveFile,inpname, "_SOURCES", iface,idx)
+        posSourc = QgsVectorLayer("point", "Sources", "memory")
+        prSourc = posSourc.dataProvider()
+        fields=["Node_ID","Type","Strength","Pattern"]; fieldsCode=[0,0,1,0]
+        createColumnsAttrb(prSourc,fields,fieldsCode)
+        writeDBF(posSourc,ppSourc,prSourc,saveFile,inpname, "_SOURCES", iface,idx)
 
     if rules!=[] and len(rules[0])>3:
-        writeDBF2(posRul,ppRul,prRul,saveFile,inpname, "_RULES", iface,idx)
+        posRul = QgsVectorLayer("point", "Rules", "memory")
+        prRul = posRul.dataProvider()
+        fields=["Rule_ID","Rule"]; fieldsCode=[0,0]
+        createColumnsAttrb(prRul,fields,fieldsCode)
+        writeDBF(posRul,ppRul,prRul,saveFile,inpname, "_RULES", iface,idx)
 
     if ppQual!=[]:
-        #print ppQual
-        writeDBF2(posQual,ppQual,prQual,saveFile,inpname, "_QUALITY", iface,idx)
+        posQual = QgsVectorLayer("point", "Sources", "memory")
+        prQual = posQual.dataProvider()
+        fields=["Node_ID","Init_Qual"]; fieldsCode=[0,1]
+        createColumnsAttrb(prQual,fields,fieldsCode)
+        writeDBF(posQual,ppQual,prQual,saveFile,inpname, "_QUALITY", iface,idx)
+
+    if demands!=[]:
+        posDem = QgsVectorLayer("point", "Demands", "memory")
+        prDem = posDem.dataProvider()
+        fields=["ID","Demand","Pattern"]; fieldsCode=[0,1,0]
+        createColumnsAttrb(prDem,fields,fieldsCode)
+        writeDBF(posDem,ppDem,prDem,saveFile,inpname, "_DEMANDS", iface,idx)
+
+    if status!=[]:
+        posStat = QgsVectorLayer("point", "Status", "memory")
+        prStat = posStat.dataProvider()
+        fields=["Link_ID","Status/Setting"]; fieldsCode=[0,0]
+        createColumnsAttrb(prStat,fields,fieldsCode)
+        writeDBF(posStat,ppStat,prStat,saveFile,inpname, "_STATUS", iface,idx)
+
+    if emitters!=[]:
+        posEmit = QgsVectorLayer("point", "Emitters", "memory")
+        prEmit = posEmit.dataProvider()
+        fields=["Junc_ID","Coeff."]; fieldsCode=[0,1]
+        createColumnsAttrb(prEmit,fields,fieldsCode)
+        writeDBF(posEmit,ppEmit,prEmit,saveFile,inpname, "_EMITTERS", iface,idx)
+
+    if controls!=[]:
+        posCont = QgsVectorLayer("point", "Controls", "memory")
+        prCont = posCont.dataProvider()
+        fields=["Controls"]; fieldsCode=[0]
+        createColumnsAttrb(prCont,fields,fieldsCode)
+        writeDBF(posCont,ppCont,prCont,saveFile,inpname, "_CONTROLS", iface,idx)
+
+    if patterns!=[]:
+        posPat = QgsVectorLayer("point", "Patterns", "memory")
+        prPat = posPat.dataProvider()
+        fields=["Pattern_ID","Multipliers"]; fieldsCode=[0,0]
+        createColumnsAttrb(prPat,fields,fieldsCode)
+        writeDBF(posPat,ppPat,prPat,saveFile,inpname, "_PATTERNS", iface,idx)
+
+    if curves[0]!=[]:
+        posCurv = QgsVectorLayer("point", "Curves", "memory")
+        prCurv = posCurv.dataProvider()
+        fields=["Curve_ID","X-Value","Y-Value","Type"]; fieldsCode=[0,0,0,0]
+        createColumnsAttrb(prCurv,fields,fieldsCode)
+        writeDBF(posCurv,ppCurv,prCurv,saveFile,inpname, "_CURVES", iface,idx)
 
 
     # Write Valve Shapefile
@@ -690,43 +670,12 @@ def epa2gis(inpname):
             w.record(linkID[p],ndlConn[0][p],ndlConn[1][p],Head,Flow,power,pattern,Curve)
         w.save(saveFile+'_pumps')
 
-    # Create DBF files
-    rr=newpath + '/'+inpname[:len(inpname)-4]
     pb.setValue(100)
 
-    if demands!=[]:
-        wDem.save(saveFile+'_temp')
-        writeDBF(saveFile,inpname,"_DEMANDS",rr,iface,wCont,idx); del wDem
-    if status!=[]:
-        wStat.save(saveFile+'_temp')
-        writeDBF(saveFile,inpname,"_STATUS",rr,iface,wCont,idx); del wStat
-    if emitters!=[]:
-        wCont.save(saveFile+'_temp')
-        writeDBF(saveFile,inpname,"_EMITTERS",rr,iface,wCont,idx); del wCont
-    if controls!=[]:
-        wCont.save(saveFile+'_temp')
-        writeDBF(saveFile,inpname,"_CONTROLS",rr,iface,wCont,idx); del wCont
-    if patterns!=[]:
-        wPat.save(saveFile+'_temp')
-        writeDBF(saveFile,inpname,"_PATTERNS",rr,iface,wPat,idx); del wPat
-    if curves[0]!=[]:
-        wCurv.save(saveFile+'_temp')
-        writeDBF(saveFile,inpname,"_CURVES",rr,iface,wCurv,idx); del wCurv
 
     return idx
 
-def writeDBF(saveFile,inpname,param,rr,iface,w,idx):
-    pos_dbf = QgsVectorLayer(saveFile+'_temp.shp',"Layer Name","ogr")
-    QgsVectorFileWriter.writeAsVectorFormat(pos_dbf,saveFile+param+'.dbf',"utf-8",None,"DBF file")
-    del pos_dbf # remove from memory - close file
-    ll=iface.addVectorLayer(saveFile+param+'.dbf', inpname[:len(inpname)-4]+param, "ogr")
-    iface.legendInterface().moveLayer( ll, idx )
-    try:
-        os.remove(rr+param+'.cpg')
-    except:
-        pass
-
-def writeDBF2(pos,pp,pr,saveFile,inpname, param, iface,idx):
+def writeDBF(pos,pp,pr,saveFile,inpname, param, iface,idx):
         pos.startEditing()
         for i in range(len(pp)):
             feat = QgsFeature()
@@ -735,3 +684,11 @@ def writeDBF2(pos,pp,pr,saveFile,inpname, param, iface,idx):
         QgsVectorFileWriter.writeAsVectorFormat(pos,saveFile+param+'.dbf',"utf-8",None,"DBF file")
         ll=iface.addVectorLayer(saveFile+param+'.dbf', inpname[:len(inpname)-4]+param, "ogr")
         iface.legendInterface().moveLayer( ll, idx )
+
+def createColumnsAttrb(pr,fields,fieldsCode):
+    for i in range(len(fieldsCode)):
+        if fieldsCode[i]==0:
+            pr.addAttributes( [ QgsField(fields[i], QVariant.String) ] )
+        else:
+            pr.addAttributes( [ QgsField(fields[i], QVariant.Double) ] )
+
