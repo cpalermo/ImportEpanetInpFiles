@@ -31,7 +31,6 @@ def epa2gis(inpname):
     saveFile=res+inpname[:len(inpname)-4]
 
     pb.setValue(14)
-    #iface.messageBar().clearWidgets()
 
     #Get all Sections
     mixing = d.getMixingSection()
