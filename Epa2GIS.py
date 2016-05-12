@@ -1,9 +1,8 @@
 ﻿#(C)Marios Kyriakou 2016
 #University of Cyprus, KIOS Research Center for Intelligent Systems and Networks
-import shapefile, os
 import readEpanetFile as d
-from qgis.core import QgsFeature,QgsVectorLayer,QgsVectorFileWriter, QgsField
-import qgis.utils
+from qgis.core import QgsFeature,QgsVectorLayer,QgsVectorFileWriter,QgsField,QgsPoint,QgsGeometry
+import qgis.utils, os
 from PyQt4.QtGui import QProgressBar
 from qgis.gui import QgsMessageBar
 from PyQt4.QtCore import QVariant
@@ -29,7 +28,6 @@ def epa2gis(inpname):
     res = newpath + '\\'
     saveFile=res+inpname[:len(inpname)-4]
     pb.setValue(14)
-    #iface.messageBar().clearWidgets()
 
     #Get all Sections
     mixing = d.getMixingSection()
@@ -73,11 +71,13 @@ def epa2gis(inpname):
     #Get data of Junctions
     if d.getBinNodeJunctionCount()>0:
         # Write Junction Shapefile
-        wJunction = shapefile.Writer(shapefile.POINT)
-        wJunction.field('dc_id','C',254)
-        wJunction.field('elevation','N',20)
-        wJunction.field('pattern','C',254)
-        wJunction.field('demand','N',20,9)
+        posJunction = QgsVectorLayer("point", "Junctions", "memory")
+        prJunction = posJunction.dataProvider()
+        fields=["dc_id","elevation","pattern","demand"]
+        fieldsCode=[0,1,0,1]
+        createColumnsAttrb(prJunction,fields,fieldsCode)
+        posJunction.startEditing()
+
         ndEle=d.getBinNodeJunctionElevations()
         ndBaseD=d.getBinNodeBaseDemands()
         ndID=d.getBinNodeNameID()
@@ -86,15 +86,13 @@ def epa2gis(inpname):
     #Get data of Pipes
     #Write shapefile pipe
     if nlinkCount>0:
-        wpipe = shapefile.Writer(shapefile.POLYLINE)
-        wpipe.field('dc_id','C',254)
-        wpipe.field('node1','C',254)
-        wpipe.field('node2','C',254)
-        wpipe.field('length','N',20,9)
-        wpipe.field('diameter','N',20,9)
-        wpipe.field('status','C',254)
-        wpipe.field('roughness','N',20,9)
-        wpipe.field('minorloss','N',20,9)
+        posPipe = QgsVectorLayer("LineString", "Pipes", "memory")
+        prPipe = posPipe.dataProvider()
+        fields=["dc_id","node1","node2","length","diameter","status","roughness","minorloss"]
+        fieldsCode=[0,0,0,1,1,0,1,1]
+        createColumnsAttrb(prPipe,fields,fieldsCode)
+        posPipe.startEditing()
+
         pIndex = d.getBinLinkPumpIndex()
         vIndex = d.getBinLinkValveIndex()
         ndlConn=d.getBinNodesConnectingLinksID()
@@ -110,15 +108,13 @@ def epa2gis(inpname):
 
     # Write Tank Shapefile and get tank data
     if d.getBinNodeTankCount()>0:
-        wTank = shapefile.Writer(shapefile.POINT)
-        wTank.field('dc_id','C',254)
-        wTank.field('elevation','N',20)
-        wTank.field('initiallev','N',20)
-        wTank.field('minimumlev','N',20)
-        wTank.field('maximumlev','N',20)
-        wTank.field('diameter','N',20)
-        wTank.field('minimumvol','N',20)
-        wTank.field('volumecurv','N',20)
+        posTank = QgsVectorLayer("point", "Reservoirs", "memory")
+        prTank = posTank.dataProvider()
+        fields=["dc_id","elevation","initiallev","minimumlev","maximumlev","diameter","minimumvol","volumecurv"]
+        fieldsCode=[0,1,1,1,1,1,1,1]
+        createColumnsAttrb(prTank,fields,fieldsCode)
+        posTank.startEditing()
+
         ndTankelevation=d.getBinNodeTankElevations()
         initiallev=d.getBinNodeTankInitialLevel()
         minimumlev=d.getBinNodeTankMinimumWaterLevel()
@@ -130,11 +126,14 @@ def epa2gis(inpname):
 
     # Write Reservoir Shapefile
     if d.getBinNodeReservoirCount()>0:
-        wReservoirs = shapefile.Writer(shapefile.POINT)
-        wReservoirs.field('dc_id','C',254)
-        wReservoirs.field('head','N',20)
+        posReservoirs = QgsVectorLayer("point", "Reservoirs", "memory")
+        prReservoirs = posReservoirs.dataProvider()
+        fields=["dc_id","head"]
+        fieldsCode=[0,1]
+        createColumnsAttrb(prReservoirs,fields,fieldsCode)
         head=d.getBinNodeReservoirElevations()
-
+        posReservoirs.startEditing()
+    pb.setValue(17)
     if times!=[]:
         posTimes = QgsVectorLayer("point", "Times", "memory")
         prTimes = posTimes.dataProvider()
@@ -156,18 +155,22 @@ def epa2gis(inpname):
     ppQual=[];ppDem=[];ppStat=[];ppEmit=[];ppCont=[];ppCurv=[]
     vvLink=68;bbLink=1
     for i in range(ss):
+        if i==ss/vvLink and vvLink>-1:
+            vvLink=vvLink-1
+            pb.setValue(18+bbLink); bbLink=bbLink+1
+
         if i<d.getBinNodeJunctionCount():
-            wJunction.point(float(x[i]), float(y[i]))
-            wJunction.record(ndID[i],ndEle[i],ndPatID[i],ndBaseD[i])
+            featJ = QgsFeature()
+            point = QgsPoint(float(x[i]), float(y[i]))
+            featJ.setGeometry(QgsGeometry.fromPoint(point))
+            featJ.setAttributes([ndID[i],ndEle[i],ndPatID[i],ndBaseD[i]])
+            prJunction.addFeatures([featJ])
+
         if i<nlinkCount:
                 if len(stat)==i:
                     ch=1
                 if ch==1:
                     stat.append('OPEN')
-
-                if i==nlinkCount/vvLink and vvLink>-1:
-                    vvLink=vvLink-1
-                    pb.setValue(18+bbLink); bbLink=bbLink+1
 
                 x1.append(x[ndID.index(d.getBinLinkFromNode()[i])])
                 y1.append(y[ndID.index(d.getBinLinkFromNode()[i])])
@@ -178,73 +181,96 @@ def epa2gis(inpname):
                     xx= (float(x1[i])+float(x2[i]))/2
                     yy= (float(y1[i])+float(y2[i]))/2
                     for p in range(0,2):
-                        XY=[]
+                        featPipe = QgsFeature()
                         if p==0:
                             linkIDFinal=linkID[i]+'_pump1'
                             node1=ndlConn[0][i]
                             node2=linkIDFinal
                             indN1 = d.getBinNodeIndex(node1)
-                            XY.append(([float(x[indN1]),float(y[indN1])],[xx,yy]))
+                            point1 = QgsPoint(float(x[indN1]),float(y[indN1]))
+                            point2 = QgsPoint(xx,yy)
                         elif p==1:
                             linkIDFinal=linkID[i]+'_pump2'
                             node1=linkIDFinal
                             node2=ndlConn[1][i]
                             indN2 = d.getBinNodeIndex(node2)
-                            XY.append(([xx,yy],[float(x[indN2]),float(y[indN2])]))
+                            point2 = QgsPoint(float(x[indN2]),float(y[indN2]))
+                            point1 = QgsPoint(xx,yy)
                         length=0
                         diameter=0
                         roughness=0
                         minorloss=0
-                        wpipe.line(parts=[XY[0]])
-                        wpipe.record(linkIDFinal,node1,node2,length,diameter,stat[i],roughness,minorloss)
+
+                        featPipe.setGeometry((QgsGeometry.fromPolyline([point1,point2])))
+                        featPipe.setAttributes([linkIDFinal,node1,node2,length,diameter,stat[i],roughness,minorloss])
+                        prPipe.addFeatures([featPipe])
+
                 elif i in vIndex:
                     xx= (float(x1[i])+float(x2[i]))/2
                     yy= (float(y1[i])+float(y2[i]))/2
                     for v in range(0,2):
-                        XY=[]
+                        featPipe = QgsFeature()
                         if v==0:
                             linkIDFinal=linkID[i]+'_valve1'
                             node1=ndlConn[0][i]
                             node2=linkIDFinal
                             indN1 = d.getBinNodeIndex(node1)
-                            XY.append(([float(x[indN1]),float(y[indN1])],[xx,yy]))
+                            point1 = QgsPoint(float(x[indN1]),float(y[indN1]))
+                            point2 = QgsPoint(xx,yy)
                         elif v==1:
                             linkIDFinal=linkID[i]+'_valve2'
                             node1=linkIDFinal
                             node2=ndlConn[1][i]
                             indN2 = d.getBinNodeIndex(node2)
 
-                            XY.append(([xx,yy],[float(x[indN2]),float(y[indN2])]))
+                            point2 = QgsPoint(float(x[indN2]),float(y[indN2]))
+                            point1 = QgsPoint(xx,yy)
+
                         length=0
                         diameter=0
                         roughness=0
                         minorloss=0
-                        wpipe.line(parts=[XY[0]])
-                        wpipe.record(linkIDFinal,node1,node2,length,diameter,stat[i],roughness,minorloss)
+                        featPipe = QgsFeature()
+                        featPipe.setGeometry((QgsGeometry.fromPolyline([point1,point2])))
+                        featPipe.setAttributes([linkIDFinal,node1,node2,length,diameter,stat[i],roughness,minorloss])
+                        prPipe.addFeatures([featPipe])
                 else:
-                    point1 = [float(x1[i]),float(y1[i])]
-                    point2 = [float(x2[i]),float(y2[i])]
+                    point1 = QgsPoint(float(x1[i]),float(y1[i]))
+                    point2 = QgsPoint(float(x2[i]),float(y2[i]))
                     if vertx[i]!=[]:
                         parts=[]
                         parts.append(point1)
                         for mm in range(len(vertxyFinal[kk])):
-                            parts.append(vertxyFinal[kk][mm])
+                            a=vertxyFinal[kk][mm]
+                            parts.append(QgsPoint(a[0],a[1]))
                         parts.append(point2)
-                        wpipe.line(parts=[parts])
+                        featPipe = QgsFeature()
+                        featPipe.setGeometry((QgsGeometry.fromPolyline(parts)))
                         kk=kk+1
                     else:
-                        wpipe.line(parts=[[[float(x1[i]),float(y1[i])],[float(x2[i]),float(y2[i])]]])
-                    wpipe.record(linkID[i],ndlConn[0][i],ndlConn[1][i],linkLengths[i],linkDiameters[i],stat[i],linkRough[i],linkMinorloss[i])
+                        featPipe = QgsFeature()
+                        point1 = QgsPoint(float(x1[i]),float(y1[i]))
+                        point2 = QgsPoint(float(x2[i]),float(y2[i]))
+                        featPipe.setGeometry(QgsGeometry.fromPolyline([point1,point2]))
+
+                    featPipe.setAttributes([linkID[i],ndlConn[0][i],ndlConn[1][i],linkLengths[i],linkDiameters[i],stat[i],linkRough[i],linkMinorloss[i]])
+                    prPipe.addFeatures([featPipe])
 
         if i<d.getBinNodeTankCount():
             p=d.getBinNodeTankIndex()[i]-1
-            wTank.point(float(x[p]), float(y[p]))
-            wTank.record(ndTankID[i],ndTankelevation[i],initiallev[i],minimumlev[i],maximumlev[i],diameter[i],minimumvol[i],volumecurv[i])
+            featTank = QgsFeature()
+            point = QgsPoint(float(x[p]), float(y[p]))
+            featTank.setGeometry(QgsGeometry.fromPoint(point))
+            featTank.setAttributes([ndTankID[i],ndTankelevation[i],initiallev[i],minimumlev[i],maximumlev[i],diameter[i],minimumvol[i],volumecurv[i]])
+            prTank.addFeatures([featTank])
 
         if i<d.getBinNodeReservoirCount():
             p=d.getBinNodeReservoirIndex()[i]-1
-            wReservoirs.point(float(x[p]), float(y[p]))
-            wReservoirs.record(ndID[p],head[i])
+            feature = QgsFeature()
+            point = QgsPoint(float(x[p]), float(y[p]))
+            feature.setGeometry(QgsGeometry.fromPoint(point))
+            feature.setAttributes([ndID[p],head[i]])
+            prReservoirs.addFeatures([feature])
 
         if i<allSections[12]:
             if len(mixing[i])==3:
@@ -255,10 +281,11 @@ def epa2gis(inpname):
             ppReactions.append([reactions[i][0],reactions[i][1],reactions[i][2]])
         if i<allSections[10]:
             ppSourc.append([sources[i][0],sources[i][1]])
-            if len(sources[i])>3:
+            if len(sources[i])>2:
                 ppSourc.append([sources[i][0],sources[i][1],sources[i][3]])
         if i<allSections[9]:
-            ppRul.append([rules[i][0][1][1],rules[i][1][0]+rules[i][2][0]+rules[i][3][0]])
+            if len(rules[i])>2:
+                ppRul.append([rules[i][0][1][1],rules[i][1][0]+rules[i][2][0]+rules[i][3][0]])
         if i<allSections[8]:
             ppQual.append([quality[i][0],quality[i][1]])
         if i<allSections[7]:
@@ -272,7 +299,8 @@ def epa2gis(inpname):
         if i<allSections[3]:
             ppStat.append([status[i][0],status[i][1]])
         if i<allSections[2]:
-            ppDem.append([demands[i][0],demands[i][1],demands[i][2]])
+            if len(demands[i])>2:
+                ppDem.append([demands[i][0],demands[i][1],demands[i][2]])
         if i<allSections[0]:
             mm = energy[i][0]
             if mm.upper()=="GLOBAL":
@@ -479,16 +507,6 @@ def epa2gis(inpname):
                 prOpt.addAttributes( [ QgsField("DampLimit", QVariant.String) ] )
                 ppOpt.append(options[i][1])
 
-
-    if d.getBinNodeJunctionCount():
-        wJunction.save(saveFile+'_junctions')
-    if d.getBinLinkPipeCount():
-        wpipe.save(saveFile+'_pipes')
-    if d.getBinNodeTankCount():
-        wTank.save(saveFile+'_tanks')
-    if d.getBinNodeReservoirCount():
-        wReservoirs.save(saveFile+'_reservoirs')
-
     if options!=[]:
         writeDBF(posOpt,[ppOpt],prOpt,saveFile,inpname, "_OPTIONS", iface,idx)
 
@@ -585,46 +603,48 @@ def epa2gis(inpname):
 
     # Write Valve Shapefile
     if d.getBinLinkValveCount()>0:
-        wValve = shapefile.Writer(shapefile.POINT)
-        wValve.field('dc_id','C',254)
-        wValve.field('node1','C',254)
-        wValve.field('node2','C',254)
-        wValve.field('diameter','N',20,9)
-        wValve.field('type','C',254)
-        wValve.field('setting','N',20,9)
-        wValve.field('minorloss','N',20,9)
+        posValve = QgsVectorLayer("point", "Valve", "memory")
+        prValve = posValve.dataProvider()
+        fields=["dc_id","node1","node2","diameter","type","setting","minorloss"]
+        fieldsCode=[0,0,0,1,0,1,1]
+        createColumnsAttrb(prValve,fields,fieldsCode)
+
         linkID=d.getBinLinkValveNameID()
         linkType=d.getBinLinkValveType()  # valve type
         linkDiameter=d.getBinLinkValveDiameters()
         linkInitSett=d.getBinLinkValveSetting() #BinLinkValveSetting
         linkMinorloss=d.getBinLinkValveMinorLoss()
+
+        posValve.startEditing()
         for i, p in enumerate(d.getBinLinkValveIndex()):
             xx= (float(x1[p])+float(x2[p]))/2
             yy= (float(y1[p])+float(y2[p]))/2
-            wValve.point(xx,yy)
-            wValve.record(linkID[i],ndlConn[0][p],ndlConn[1][p],linkDiameter[i],linkType[i],linkInitSett[i],linkMinorloss[i])
-        wValve.save(saveFile+'_valves')
-
+            feature = QgsFeature()
+            point = QgsPoint(xx,yy)
+            feature.setGeometry(QgsGeometry.fromPoint(point))
+            feature.setAttributes([linkID[i],ndlConn[0][p],ndlConn[1][p],linkDiameter[i],linkType[i],linkInitSett[i],linkMinorloss[i]])
+            prValve.addFeatures([feature])
+        QgsVectorFileWriter.writeAsVectorFormat(posValve,saveFile+"_valves"+'.shp',"utf-8",None,"ESRI Shapefile")
+        ll=iface.addVectorLayer(saveFile+"_valves"+'.shp', inpname[:len(inpname)-4]+"_valves", "ogr")
+        iface.legendInterface().moveLayer( ll, idx )
     pb.setValue(70)
 
     # Write Pump Shapefile
-    w = shapefile.Writer(shapefile.POINT)
-    w.field('dc_id','C',254)
-    w.field('node1','C',254)
-    w.field('node2','C',254)
-    w.field('head','C',254)
-    w.field('flow','C',254)
-    w.field('power','C',254)
-    w.field('pattern','C',254)
-    w.field('curveID','C',254)
-
     if d.getBinLinkPumpCount()>0:
+        posPump = QgsVectorLayer("point", "Pump", "memory")
+        prPump = posPump.dataProvider()
+        fields=["dc_id","node1","node2","head","flow","power","pattern","curveID"]
+        fieldsCode=[0,0,0,0,0,0,0,0]
+        createColumnsAttrb(prPump,fields,fieldsCode)
+
         chPowerPump=d.getBinLinkPumpPower()
         cheadpump = d.getBinLinkPumpCurveNameID()
         pumpID = d.getBinLinkPumpNameID()
         patternsIDs=d.getBinLinkPumpPatterns()
         ppatt=d.getBinLinkPumpPatternsPumpID()
         linkID=d.getBinLinkNameID()
+
+        posPump.startEditing()
         for i, p in enumerate(d.getBinLinkPumpIndex()):
             Head=[];Flow=[];Curve=[];power=[];pattern=[]
             pumpNameIDPower=d.getBinLinkPumpNameIDPower()
@@ -647,14 +667,26 @@ def epa2gis(inpname):
                 Curve=d.getBinLinkPumpCurveNameID()[i]
                 xx= (float(x1[p])+float(x2[p]))/2
                 yy= (float(y1[p])+float(y2[p]))/2
-                w.point(xx,yy)
-                wpipe.line(parts=[[[float(x1[p]),float(y1[p])],[float(x2[p]),float(y2[p])]]])
+                feature = QgsFeature()
+                point = QgsPoint(xx,yy)
+                feature.setGeometry(QgsGeometry.fromPoint(point))
 
+                point1 = QgsPoint(float(x1[p]),float(y1[p]))
+                point2 = QgsPoint(float(x2[p]),float(y2[p]))
+                featPipe.setGeometry(QgsGeometry.fromPolyline([point1,point2]))
+                prPipe.addFeatures([featPipe])
             else:
                 xx= (float(x1[p])+float(x2[p]))/2
                 yy= (float(y1[p])+float(y2[p]))/2
-                w.point(xx,yy)
-                wpipe.line(parts=[[[float(x1[p]),float(y1[p])],[float(x2[p]),float(y2[p])]]])
+                feature = QgsFeature()
+                point = QgsPoint(xx,yy)
+                feature.setGeometry(QgsGeometry.fromPoint(point))
+
+                point1 = QgsPoint(float(x1[p]),float(y1[p]))
+                point2 = QgsPoint(float(x2[p]),float(y2[p]))
+                featPipe.setGeometry(QgsGeometry.fromPolyline([point1,point2]))
+                prPipe.addFeatures([featPipe])
+
             Head = ' '.join(Head)
             Flow = ' '.join(Flow)
             if Head==[]:
@@ -667,13 +699,30 @@ def epa2gis(inpname):
                 power='NULL'
             if pattern==[]:
                 pattern='NULL'
-            w.record(linkID[p],ndlConn[0][p],ndlConn[1][p],Head,Flow,power,pattern,Curve)
-        w.save(saveFile+'_pumps')
+            feature.setAttributes([linkID[p],ndlConn[0][p],ndlConn[1][p],Head,Flow,power,pattern,Curve])
+            prPump.addFeatures([feature])
+        QgsVectorFileWriter.writeAsVectorFormat(posPump,saveFile+"_pumps"+'.shp',"utf-8",None,"ESRI Shapefile")
+        ll=iface.addVectorLayer(saveFile+"_pumps"+'.shp', inpname[:len(inpname)-4]+"_pumps", "ogr")
+        iface.legendInterface().moveLayer( ll, idx )
+    if d.getBinLinkPipeCount():
+        QgsVectorFileWriter.writeAsVectorFormat(posPipe,saveFile+"_pipes"+'.shp',"utf-8",None,"ESRI Shapefile")
+        ll=iface.addVectorLayer(saveFile+"_pipes"+'.shp', inpname[:len(inpname)-4]+"_pipes", "ogr")
+        iface.legendInterface().moveLayer( ll, idx )
+    if d.getBinNodeJunctionCount():
+        QgsVectorFileWriter.writeAsVectorFormat(posJunction,saveFile+"_junctions"+'.shp',"utf-8",None,"ESRI Shapefile")
+        ll=iface.addVectorLayer(saveFile+"_junctions"+'.shp', inpname[:len(inpname)-4]+"_junctions", "ogr")
+        iface.legendInterface().moveLayer( ll, idx )
+        #ll.loadNamedStyle(getPathPlugin+"junctions.qml")
+    if d.getBinNodeTankCount():
+        QgsVectorFileWriter.writeAsVectorFormat(posTank,saveFile+"_tanks"+'.shp',"utf-8",None,"ESRI Shapefile")
+        ll=iface.addVectorLayer(saveFile+"_tanks"+'.shp', inpname[:len(inpname)-4]+"_tanks", "ogr")
+        iface.legendInterface().moveLayer( ll, idx )
+    if d.getBinNodeReservoirCount():
+        QgsVectorFileWriter.writeAsVectorFormat(posReservoirs,saveFile+"_reservoirs"+'.shp',"utf-8",None,"ESRI Shapefile")
+        ll=iface.addVectorLayer(saveFile+"_reservoirs"+'.shp', inpname[:len(inpname)-4]+"_reservoirs", "ogr")
+        iface.legendInterface().moveLayer( ll, idx )
 
-    pb.setValue(100)
-
-
-    return idx
+    return idx, pb
 
 def writeDBF(pos,pp,pr,saveFile,inpname, param, iface,idx):
         pos.startEditing()
@@ -691,4 +740,3 @@ def createColumnsAttrb(pr,fields,fieldsCode):
             pr.addAttributes( [ QgsField(fields[i], QVariant.String) ] )
         else:
             pr.addAttributes( [ QgsField(fields[i], QVariant.Double) ] )
-
