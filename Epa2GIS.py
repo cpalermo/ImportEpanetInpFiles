@@ -133,7 +133,7 @@ def epa2gis(inpname):
         createColumnsAttrb(prReservoirs,fields,fieldsCode)
         head=d.getBinNodeReservoirElevations()
         posReservoirs.startEditing()
-    pb.setValue(17)
+    #pb.setValue(17)
     if times!=[]:
         posTimes = QgsVectorLayer("point", "Times", "memory")
         prTimes = posTimes.dataProvider()
@@ -157,7 +157,7 @@ def epa2gis(inpname):
     for i in range(ss):
         if i==ss/vvLink and vvLink>-1:
             vvLink=vvLink-1
-            pb.setValue(18+bbLink); bbLink=bbLink+1
+            #pb.setValue(18+bbLink); bbLink=bbLink+1
 
         if i<d.getBinNodeJunctionCount():
             featJ = QgsFeature()
@@ -282,7 +282,7 @@ def epa2gis(inpname):
         if i<allSections[10]:
             ppSourc.append([sources[i][0],sources[i][1]])
             if len(sources[i])>2:
-                ppSourc.append([sources[i][0],sources[i][1],sources[i][3]])
+                ppSourc.append([sources[i][0],sources[i][1],sources[i][2]])
         if i<allSections[9]:
             if len(rules[i])>2:
                 ppRul.append([rules[i][0][1][1],rules[i][1][0]+rules[i][2][0]+rules[i][3][0]])
