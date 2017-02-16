@@ -10,7 +10,7 @@
 name=ImportEpanetInpFiles
 qgisMinimumVersion=2.0
 description=Import Epanet Input Files
-version=0.4
+version=0.5
 author=KIOS Research Center
 email=mariosmsk@gmail.com
 
@@ -29,7 +29,9 @@ changelog=2016-03-14  ImportEpanetInpFiles 0.2:
 		Add sections Times, Options, Report, Energy, Demands, Status, Reactions, 		Emitters, Controls, Patterns, Quality, Rules, Sources, Mixing, Curves
 	  2017-02-16  ImportEpanetInpFiles 0.4:
 		Fixed error with the QProgressBar, and the section Source
-     
+	  2017-02-16  ImportEpanetInpFiles 0.5:
+		Remove QProgressBar
+    
 # Tags are comma separated with spaces allowed
 tags=epanet,import,inp,network
 

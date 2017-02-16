@@ -30,9 +30,9 @@ class ImpEpanet(object):
     if filePath == "":
       return
     s = epa2gis(filePath)
-    idx=s[0]
-    pb=s[1]
-    pb.setValue(100)
+    idx=s#[0]
+    #pb=s[1]
+    #pb.setValue(100)
     self.iface.messageBar().clearWidgets()
     msgBox = QMessageBox()
     msgBox.setWindowTitle('ImportEpanetInpFiles')

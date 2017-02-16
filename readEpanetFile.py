@@ -7,9 +7,9 @@ def LoadFile(inp):
     #inpname = getPathPlugin + inp
     inpname = inp
 
-def BinUpdateClass(pb):
+def BinUpdateClass():#(pb):
     global mm
-    mm = getBinInfo(pb)
+    mm = getBinInfo()#(pb)
     return mm
 
 ## get Info
@@ -354,7 +354,7 @@ def getLabelsSection():
 
 
 # Get all info
-def getBinInfo(pb):
+def getBinInfo():#(pb):
     global inpname
     file = open(inpname,'r')
 
@@ -432,7 +432,7 @@ def getBinInfo(pb):
     vertx=[];verty=[]
     # Append empty lists in first two indexes.
     sec2=[0]*num;ch1=0;ch=1
-    pb.setValue(2)
+    #pb.setValue(2)
     while True:
         if "[" in s1:
             pass
@@ -440,7 +440,7 @@ def getBinInfo(pb):
             s1=file.readline()
         ok=0
         if "[END]" in s1:
-            pb.setValue(10)
+            #pb.setValue(10)
             file.close()
             return [nodeJunctionNameID, nodeJunctionElevations, nodeJunctionBaseDemands, nodePatternNameID, len(nodeJunctionNameID),#01234
                     nodeReservoirNameID, nodeReservoirElevations, len(nodeReservoirNameID),#567
@@ -487,9 +487,9 @@ def getBinInfo(pb):
             sec=[0]*num;sec[10]=1;s1=file.readline()
         elif "[COORDINATES]" in s1:
             sec2=[0]*num;sec2[0]=1;s1=file.readline()
-            pb.setValue(5)
+            #pb.setValue(5)
         elif "[VERTICES]" in s1:
-            pb.setValue(7)
+            #pb.setValue(7)
             sec2=[0]*num;sec2[1]=1;s1=file.readline()
         elif "[LABELS]" in s1:
             sec2=[0]*num;sec2[12]=1;s1=file.readline()

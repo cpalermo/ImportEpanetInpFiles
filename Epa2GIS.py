@@ -19,15 +19,15 @@ def epa2gis(inpname):
 
     iface=qgis.utils.iface
     d.LoadFile(inp)
-    msgBar= iface.messageBar()
-    pb= QProgressBar()
-    msgBar.pushWidget(pb, QgsMessageBar().INFO, 5)
-    pb.setValue(1)
-    d.BinUpdateClass(pb)
+    #msgBar= iface.messageBar()
+    #pb= QProgressBar()
+    #msgBar.pushWidget(pb, QgsMessageBar().INFO, 5)
+    #pb.setValue(1)
+    d.BinUpdateClass()#(pb)
     nlinkCount=d.getBinLinkCount()
     res = newpath + '\\'
     saveFile=res+inpname[:len(inpname)-4]
-    pb.setValue(14)
+    #pb.setValue(14)
 
     #Get all Sections
     mixing = d.getMixingSection()
@@ -54,7 +54,7 @@ def epa2gis(inpname):
     ss=max(allSections)
     idx = iface.legendInterface().addGroup(inpname[:len(inpname)-4])
     xy=d.getBinNodeCoordinates()
-    pb.setValue(15)
+    #pb.setValue(15)
     x=xy[0]
     y=xy[1]
     vertx=xy[2]
@@ -66,7 +66,7 @@ def epa2gis(inpname):
             vertxy.append([float(vertx[i][u]),float(verty[i][u])])
         if vertxy!=[]:
             vertxyFinal.append(vertxy)
-    pb.setValue(16)
+    #pb.setValue(16)
 
     #Get data of Junctions
     if d.getBinNodeJunctionCount()>0:
@@ -627,7 +627,7 @@ def epa2gis(inpname):
         QgsVectorFileWriter.writeAsVectorFormat(posValve,saveFile+"_valves"+'.shp',"utf-8",None,"ESRI Shapefile")
         ll=iface.addVectorLayer(saveFile+"_valves"+'.shp', inpname[:len(inpname)-4]+"_valves", "ogr")
         iface.legendInterface().moveLayer( ll, idx )
-    pb.setValue(70)
+    #pb.setValue(70)
 
     # Write Pump Shapefile
     if d.getBinLinkPumpCount()>0:
@@ -722,7 +722,7 @@ def epa2gis(inpname):
         ll=iface.addVectorLayer(saveFile+"_reservoirs"+'.shp', inpname[:len(inpname)-4]+"_reservoirs", "ogr")
         iface.legendInterface().moveLayer( ll, idx )
 
-    return idx, pb
+    return idx #, pb
 
 def writeDBF(pos,pp,pr,saveFile,inpname, param, iface,idx):
         pos.startEditing()
