@@ -70,6 +70,10 @@ def getBinNodeBaseDemands():
     global mm
     return mm[2]
 
+def getBinNodeBaseDemandsDemSection():
+    global mm
+    return mm[62], mm[63], mm[64] # nodeJunctionsDemSection, nodeJunctionsIDDemSection, nodeJunctionsPatDemSection
+
 # Tanks Info
 def getBinNodeTankNameID():
     global mm
@@ -361,6 +365,11 @@ def getBinInfo():#(pb):
     nodeJunctionNameID=[]
     nodeJunctionElevations=[]
     nodeJunctionBaseDemands=[]
+
+    nodeJunctionsDemSection=[]
+    nodeJunctionsIDDemSection=[]
+    nodeJunctionsPatDemSection=[]
+
     nodePatternNameID=[]
     nodeReservoirNameID=[]
     nodeReservoirElevations=[]
@@ -453,7 +462,8 @@ def getBinInfo():#(pb):
                     x,y,vertx,verty, #40#41#42#43
                     demandsSection,statusSection,emittersSection,controlsSection,patternsSection,curvesSection,curvesSectionType,#44#45#46#47#48#49#50
                     qualitySection,rulesSection,sourcesSection,energySection,reactionsSection,reactionsOptionSection,mixingSection,#51#52#53#54#55#56#57
-                    timesSection,optionsSection,reportSection,labelsSection]#58#59#60#61
+                    timesSection,optionsSection,reportSection,labelsSection,#58#59#60#61
+                    nodeJunctionsDemSection, nodeJunctionsIDDemSection, nodeJunctionsPatDemSection]  #62#63#64
 
         elif "[JUNCTIONS]" in s1:
             sec[0]=1;s1=file.readline(); pass
@@ -693,7 +703,9 @@ def getBinInfo():#(pb):
                 if mm[0][0]==';':
                     pass
                 else:
-                    nodeJunctionBaseDemands.append(float(mm[1]))
+                    nodeJunctionsIDDemSection.append(mm[0])
+                    nodeJunctionsDemSection.append(float(mm[1]))
+                    nodeJunctionsPatDemSection.append(mm[2])
                     demandsSection.append(mm)
 
         if sec[9]==1: #CURVES
