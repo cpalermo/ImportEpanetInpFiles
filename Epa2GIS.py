@@ -754,7 +754,7 @@ def epa2gis(inpname):
                 Curve=d.getBinLinkPumpCurveNameID()[i]
                 curveIndex = curvesIDunique.index(Curve)
 
-            feature.initAttributes(6+sum(CurvesTmpIndices)+1)
+            feature.initAttributes(6+sum(CurvesTmpIndices)*2+1)
             feature.setAttribute(0, linkID[p])
             feature.setAttribute(1, ndlConn[0][p])
             feature.setAttribute(2, ndlConn[1][p])
