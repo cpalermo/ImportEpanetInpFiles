@@ -1,11 +1,15 @@
 #(C)Marios Kyriakou 2016
 #University of Cyprus, KIOS Research Center for Intelligent Systems and Networks
-#import qgis.utils
+from qgis.PyQt.QtWidgets import QAction, QFileDialog, QMessageBox
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtCore import QVariant, Qt
+
 import os
-from Epa2GIS import epa2gis
-from PyQt4.QtCore import QObject, SIGNAL
-from PyQt4.QtGui import QAction, QIcon, QFileDialog, QMessageBox
-import resources_rc
+from .Epa2GIS import epa2gis
+
+# Initialize Qt resources from file resources.py, don't delete even if it
+# shows not used
+from . import resources_rc
 
 class ImpEpanet(object):
   def __init__(self, iface):
@@ -16,7 +20,9 @@ class ImpEpanet(object):
     # Create action
     self.action = QAction(QIcon(":/plugins/ImportEpanetInpFiles/impepanet.png"),"Import Epanet Input File",self.iface.mainWindow())
     self.action.setWhatsThis("Import Epanet Input File")
-    QObject.connect(self.action,SIGNAL("triggered()"),self.run)
+    #QObject.connect(self.action,SIGNAL("triggered()"),self.run)
+    self.action.triggered.connect(self.run)
+ 
     self.iface.addToolBarIcon(self.action)
     self.iface.addPluginToMenu("&ImportEpanetInpFiles",self.action)
 
@@ -29,12 +35,11 @@ class ImpEpanet(object):
     filePath = QFileDialog.getOpenFileName(self.iface.mainWindow(),"Choose EPANET Input file" , os.getcwd(), "Epanet Inp File (*.inp)")
     if filePath == "":
       return
-    s = epa2gis(filePath)
-    idx=s#[0]
-    #pb=s[1]
-    #pb.setValue(100)
+    epa2gis(filePath[0])
+
     self.iface.messageBar().clearWidgets()
     msgBox = QMessageBox()
+    msgBox.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint | Qt.WindowCloseButtonHint)
     msgBox.setWindowTitle('ImportEpanetInpFiles')
     msgBox.setText('Shapefiles have been created successfully in folder "_shapefiles_".')
     msgBox.exec_()
