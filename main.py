@@ -33,7 +33,7 @@ class ImpEpanet(object):
 
   def run(self):
     filePath = QFileDialog.getOpenFileName(self.iface.mainWindow(),"Choose EPANET Input file" , os.getcwd(), "Epanet Inp File (*.inp)")
-    if filePath == "":
+    if filePath[0] == "":
       return
     epa2gis(filePath[0])
 

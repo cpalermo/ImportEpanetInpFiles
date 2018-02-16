@@ -11,8 +11,8 @@ name=ImportEpanetInpFiles
 qgisMinimumVersion=2.99
 qgisMaximumVersion=3.99
 description=Import Epanet Input Files
-version=1.0
-author=KIOS Research Center
+version=1.01
+author=Marios S. Kyriakou, KIOS Research and Innovation Center of Excellence (KIOS CoE)
 email=mariosmsk@gmail.com
 about=ImportEpanetInpFiles converts EPANET Input File to shapefiles and adds them in the QGIS canvas. Also, the shapefiles stored into the _shapefiles_ folder.
 
@@ -35,6 +35,8 @@ changelog=2016-03-14  ImportEpanetInpFiles 0.2:
 		Fixed error with curves
 	  2018-02-15  ImportEpanetInpFiles 1.0:
 		Issue fixes and migration code to QGIS3
+	  2018-02-16  ImportEpanetInpFiles 1.01:
+		Fixed error in cancel option
 		
 # Tags are comma separated with spaces allowed
 tags=epanet,import,inp,network
