@@ -12,8 +12,7 @@ from qgis.gui import QgsMessageBar
 import collections
 import numpy as np
 
-def epa2gis(inpname):
-    plugin_path = os.path.join(os.environ['USERPROFILE']) + './AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/ImportEpanetInpFiles'
+def epa2gis(inpname, plugin_path):
     file_extension = os.path.dirname(inpname)
     inpname = os.path.basename(inpname)
     inp = file_extension + '/'+ inpname

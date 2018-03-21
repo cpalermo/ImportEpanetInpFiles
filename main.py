@@ -15,6 +15,7 @@ class ImpEpanet(object):
   def __init__(self, iface):
     # Save a reference to the QGIS iface
     self.iface = iface
+    self.plugin_dir = os.path.dirname(__file__)
 
   def initGui(self):
     # Create action
@@ -35,7 +36,7 @@ class ImpEpanet(object):
     filePath = QFileDialog.getOpenFileName(self.iface.mainWindow(),"Choose EPANET Input file" , os.getcwd(), "Epanet Inp File (*.inp)")
     if filePath[0] == "":
       return
-    epa2gis(filePath[0])
+    epa2gis(filePath[0], self.plugin_dir)
 
     self.iface.messageBar().clearWidgets()
     msgBox = QMessageBox()
