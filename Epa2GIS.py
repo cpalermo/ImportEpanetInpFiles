@@ -1,18 +1,15 @@
 ﻿#(C)Marios Kyriakou 2016
 #University of Cyprus, KIOS Research Center for Intelligent Systems and Networks
-from . import readEpanetFile as d
-import qgis.utils
-import sys, os
-from qgis.PyQt.QtCore import QVariant
-from qgis.PyQt.QtWidgets import QProgressBar
-from qgis.PyQt.QtGui import QIcon
-from qgis.core import Qgis, QgsFeature, QgsVectorLayer, QgsVectorFileWriter, QgsField, QgsPointXY, QgsGeometry, QgsProject, QgsCoordinateReferenceSystem, QgsLayerTreeLayer
+import readEpanetFile as d
+from qgis.core import QgsFeature,QgsVectorLayer,QgsVectorFileWriter,QgsField,QgsPoint,QgsGeometry
+import qgis.utils, os
+from PyQt4.QtGui import QProgressBar
 from qgis.gui import QgsMessageBar
-
+from PyQt4.QtCore import QVariant
 import collections
 import numpy as np
 
-def epa2gis(inpname, plugin_path):
+def epa2gis(inpname):
     file_extension = os.path.dirname(inpname)
     inpname = os.path.basename(inpname)
     inp = file_extension + '/'+ inpname
@@ -52,9 +49,7 @@ def epa2gis(inpname, plugin_path):
                  len(curves[0]),len(quality),len(rules),len(sources),len(reactions),len(mixing),len(times),len(report),
                  len(options),d.getBinNodeCount(),d.getBinLinkCount()]
     ss=max(allSections)
-    root = QgsProject.instance().layerTreeRoot()
-    idx = root.insertGroup(0, inpname[:len(inpname)-4])
-
+    idx = iface.legendInterface().addGroup(inpname[:len(inpname)-4])
     xy=d.getBinNodeCoordinates()
     x=xy[0]
     y=xy[1]
@@ -121,7 +116,7 @@ def epa2gis(inpname, plugin_path):
         for u in range(0,maxCategories):
             fields.append('Demand' + str(u+1)); fields.append('Pattern' + str(u+1))
             fieldsCode.append(1); fieldsCode.append(0)
-        posJunction = QgsVectorLayer("point?crs=EPSG:4326", "Junctions", "memory")
+        posJunction = QgsVectorLayer("point", "Junctions", "memory")
         prJunction = posJunction.dataProvider()
 
         ndBaseTmp = ndBaseTmp.tolist()
@@ -133,7 +128,7 @@ def epa2gis(inpname, plugin_path):
     #Get data of Pipes
     #Write shapefile pipe
     if nlinkCount>0:
-        posPipe = QgsVectorLayer("LineString?crs=EPSG:4326", "Pipes", "memory")
+        posPipe = QgsVectorLayer("LineString", "Pipes", "memory")
         prPipe = posPipe.dataProvider()
         fields=["ID","NodeFrom","NodeTo","Status","Length","Diameter","Roughness","MinorLoss"]
         fieldsCode=[0,0,0,0,1,1,1,1]
@@ -155,7 +150,7 @@ def epa2gis(inpname, plugin_path):
 
     # Write Tank Shapefile and get tank data
     if d.getBinNodeTankCount()>0:
-        posTank = QgsVectorLayer("point?crs=EPSG:4326", "Reservoirs", "memory")
+        posTank = QgsVectorLayer("point", "Reservoirs", "memory")
         prTank = posTank.dataProvider()
         fields=["ID","Elevation","InitLevel","MinLevel","MaxLevel","Diameter","MinVolume","VolumeCurve"]
         fieldsCode=[0,1,1,1,1,1,1,1]
@@ -173,7 +168,7 @@ def epa2gis(inpname, plugin_path):
 
     # Write Reservoir Shapefile
     if d.getBinNodeReservoirCount()>0:
-        posReservoirs = QgsVectorLayer("point?crs=EPSG:4326", "Reservoirs", "memory")
+        posReservoirs = QgsVectorLayer("point", "Reservoirs", "memory")
         prReservoirs = posReservoirs.dataProvider()
         fields=["ID","Head"]
         fieldsCode=[0,1]
@@ -181,19 +176,19 @@ def epa2gis(inpname, plugin_path):
         head=d.getBinNodeReservoirElevations()
         posReservoirs.startEditing()
     if times!=[]:
-        posTimes = QgsVectorLayer("point?crs=EPSG:4326", "Times", "memory")
+        posTimes = QgsVectorLayer("point", "Times", "memory")
         prTimes = posTimes.dataProvider()
     if energy!=[]:
-        posE = QgsVectorLayer("point?crs=EPSG:4326", "Energy", "memory")
+        posE = QgsVectorLayer("point", "Energy", "memory")
         prE = posE.dataProvider()
     if report!=[]:
-        posRep = QgsVectorLayer("point?crs=EPSG:4326", "Report", "memory")
+        posRep = QgsVectorLayer("point", "Report", "memory")
         prRep = posRep.dataProvider()
     if options!=[]:
-        posOpt = QgsVectorLayer("point?crs=EPSG:4326", "Options", "memory")
+        posOpt = QgsVectorLayer("point", "Options", "memory")
         prOpt = posOpt.dataProvider()
     if optReactions!=[]:
-        posO = QgsVectorLayer("point?crs=EPSG:4326", "Reactions", "memory")
+        posO = QgsVectorLayer("point", "Reactions", "memory")
         prO = posO.dataProvider()
 
     ppE=[];ppO=[];ppTimes=[];ppRep=[];ppOpt=[]
@@ -207,9 +202,9 @@ def epa2gis(inpname, plugin_path):
 
         if i<d.getBinNodeJunctionCount():
             featJ = QgsFeature()
-            point = QgsPointXY(float(x[i]), float(y[i]))
+            point = QgsPoint(float(x[i]), float(y[i]))
             featJ.initAttributes(2+len(ndBaseTmp[0])*2)
-            featJ.setGeometry(QgsGeometry.fromPointXY(point))
+            featJ.setGeometry(QgsGeometry.fromPoint(point))
             featJ.setAttribute(0, ndID[i])
             featJ.setAttribute(1, ndEle[i])
             w=2
@@ -239,22 +234,22 @@ def epa2gis(inpname, plugin_path):
                             node1=ndlConn[0][i]
                             node2=linkIDFinal
                             indN1 = d.getBinNodeIndex(node1)
-                            point1 = QgsPointXY(float(x[indN1]),float(y[indN1]))
-                            point2 = QgsPointXY(xx,yy)
+                            point1 = QgsPoint(float(x[indN1]),float(y[indN1]))
+                            point2 = QgsPoint(xx,yy)
                         elif p==1:
                             linkIDFinal=linkID[i]+'_pump2'
                             node1=linkIDFinal
                             node2=ndlConn[1][i]
                             indN2 = d.getBinNodeIndex(node2)
-                            point2 = QgsPointXY(float(x[indN2]),float(y[indN2]))
-                            point1 = QgsPointXY(xx,yy)
+                            point2 = QgsPoint(float(x[indN2]),float(y[indN2]))
+                            point1 = QgsPoint(xx,yy)
                         length=0
                         diameter=0
                         roughness=0
                         minorloss=0
 
                         featPipe = QgsFeature()
-                        featPipe.setGeometry((QgsGeometry.fromPolylineXY([point1,point2])))
+                        featPipe.setGeometry((QgsGeometry.fromPolyline([point1,point2])))
                         featPipe.setAttributes([linkIDFinal,node1,node2,stat[i],length,diameter,roughness,minorloss])
                         prPipe.addFeatures([featPipe])
 
@@ -267,16 +262,16 @@ def epa2gis(inpname, plugin_path):
                             node1=ndlConn[0][i]
                             node2=linkIDFinal
                             indN1 = d.getBinNodeIndex(node1)
-                            point1 = QgsPointXY(float(x[indN1]),float(y[indN1]))
-                            point2 = QgsPointXY(xx,yy)
+                            point1 = QgsPoint(float(x[indN1]),float(y[indN1]))
+                            point2 = QgsPoint(xx,yy)
                         elif v==1:
                             linkIDFinal=linkID[i]+'_valve2'
                             node1=linkIDFinal
                             node2=ndlConn[1][i]
                             indN2 = d.getBinNodeIndex(node2)
 
-                            point2 = QgsPointXY(float(x[indN2]),float(y[indN2]))
-                            point1 = QgsPointXY(xx,yy)
+                            point2 = QgsPoint(float(x[indN2]),float(y[indN2]))
+                            point1 = QgsPoint(xx,yy)
 
                         length=0
                         diameter=0
@@ -284,27 +279,27 @@ def epa2gis(inpname, plugin_path):
                         minorloss=0
 
                         featPipe = QgsFeature()
-                        featPipe.setGeometry((QgsGeometry.fromPolylineXY([point1,point2])))
+                        featPipe.setGeometry((QgsGeometry.fromPolyline([point1,point2])))
                         featPipe.setAttributes([linkIDFinal,node1,node2,stat[i],length,diameter,roughness,minorloss])
                         prPipe.addFeatures([featPipe])
                 else:
-                    point1 = QgsPointXY(float(x1[i]),float(y1[i]))
-                    point2 = QgsPointXY(float(x2[i]),float(y2[i]))
+                    point1 = QgsPoint(float(x1[i]),float(y1[i]))
+                    point2 = QgsPoint(float(x2[i]),float(y2[i]))
                     if vertx[i]!=[]:
                         parts=[]
                         parts.append(point1)
                         for mm in range(len(vertxyFinal[kk])):
                             a=vertxyFinal[kk][mm]
-                            parts.append(QgsPointXY(a[0],a[1]))
+                            parts.append(QgsPoint(a[0],a[1]))
                         parts.append(point2)
                         featPipe = QgsFeature()
-                        featPipe.setGeometry((QgsGeometry.fromPolylineXY(parts)))
+                        featPipe.setGeometry((QgsGeometry.fromPolyline(parts)))
                         kk=kk+1
                     else:
                         featPipe = QgsFeature()
-                        point1 = QgsPointXY(float(x1[i]),float(y1[i]))
-                        point2 = QgsPointXY(float(x2[i]),float(y2[i]))
-                        featPipe.setGeometry(QgsGeometry.fromPolylineXY([point1,point2]))
+                        point1 = QgsPoint(float(x1[i]),float(y1[i]))
+                        point2 = QgsPoint(float(x2[i]),float(y2[i]))
+                        featPipe.setGeometry(QgsGeometry.fromPolyline([point1,point2]))
 
                     featPipe.setAttributes([linkID[i],ndlConn[0][i],ndlConn[1][i],stat[i],linkLengths[i],linkDiameters[i],linkRough[i],linkMinorloss[i]])
                     prPipe.addFeatures([featPipe])
@@ -312,16 +307,16 @@ def epa2gis(inpname, plugin_path):
         if i<d.getBinNodeTankCount():
             p=d.getBinNodeTankIndex()[i]-1
             featTank = QgsFeature()
-            point = QgsPointXY(float(x[p]), float(y[p]))
-            featTank.setGeometry(QgsGeometry.fromPointXY(point))
+            point = QgsPoint(float(x[p]), float(y[p]))
+            featTank.setGeometry(QgsGeometry.fromPoint(point))
             featTank.setAttributes([ndTankID[i],ndTankelevation[i],initiallev[i],minimumlev[i],maximumlev[i],diameter[i],minimumvol[i],volumecurv[i]])
             prTank.addFeatures([featTank])
 
         if i<d.getBinNodeReservoirCount():
             p=d.getBinNodeReservoirIndex()[i]-1
             feature = QgsFeature()
-            point = QgsPointXY(float(x[p]), float(y[p]))
-            feature.setGeometry(QgsGeometry.fromPointXY(point))
+            point = QgsPoint(float(x[p]), float(y[p]))
+            feature.setGeometry(QgsGeometry.fromPoint(point))
             feature.setAttributes([ndID[p],head[i]])
             prReservoirs.addFeatures([feature])
 
@@ -576,7 +571,7 @@ def epa2gis(inpname, plugin_path):
         writeDBF(posO,[ppO],prO,saveFile,inpname, "_REACTIONS", iface,idx)
 
     if mixing!=[]:
-        posMix = QgsVectorLayer("point?crs=EPSG:4326", "Mixing", "memory")
+        posMix = QgsVectorLayer("point", "Mixing", "memory")
         prMix = posMix.dataProvider()
         fields=["Tank_ID","Model","Fraction"]
         fieldsCode=[0,0,1] #0 String, 1 Double
@@ -584,70 +579,70 @@ def epa2gis(inpname, plugin_path):
         writeDBF(posMix,ppMix,prMix,saveFile,inpname, "_MIXING", iface,idx)
 
     if reactions!=[]:
-        posReact = QgsVectorLayer("point?crs=EPSG:4326", "ReactionsInfo", "memory")
+        posReact = QgsVectorLayer("point", "ReactionsInfo", "memory")
         prReact = posReact.dataProvider()
         fields=["Type","Pipe/Tank","Coeff."]; fieldsCode=[0,0,1]
         createColumnsAttrb(prReact,fields,fieldsCode)
         writeDBF(posReact,ppReactions,prReact,saveFile,inpname, "_REACTIONSinfo", iface,idx)
 
     if sources!=[]:
-        posSourc = QgsVectorLayer("point?crs=EPSG:4326", "Sources", "memory")
+        posSourc = QgsVectorLayer("point", "Sources", "memory")
         prSourc = posSourc.dataProvider()
         fields=["Node_ID","Type","Strength","Pattern"]; fieldsCode=[0,0,1,0]
         createColumnsAttrb(prSourc,fields,fieldsCode)
         writeDBF(posSourc,ppSourc,prSourc,saveFile,inpname, "_SOURCES", iface,idx)
 
     if rules!=[] and len(rules[0])>3:
-        posRul = QgsVectorLayer("point?crs=EPSG:4326", "Rules", "memory")
+        posRul = QgsVectorLayer("point", "Rules", "memory")
         prRul = posRul.dataProvider()
         fields=["Rule_ID","Rule"]; fieldsCode=[0,0]
         createColumnsAttrb(prRul,fields,fieldsCode)
         writeDBF(posRul,ppRul,prRul,saveFile,inpname, "_RULES", iface,idx)
 
     if ppQual!=[]:
-        posQual = QgsVectorLayer("point?crs=EPSG:4326", "Sources", "memory")
+        posQual = QgsVectorLayer("point", "Sources", "memory")
         prQual = posQual.dataProvider()
         fields=["Node_ID","Init_Qual"]; fieldsCode=[0,1]
         createColumnsAttrb(prQual,fields,fieldsCode)
         writeDBF(posQual,ppQual,prQual,saveFile,inpname, "_QUALITY", iface,idx)
 
     # if demands!=[]:
-    #     posDem = QgsVectorLayer("point?crs=EPSG:4326", "Demands", "memory")
+    #     posDem = QgsVectorLayer("point", "Demands", "memory")
     #     prDem = posDem.dataProvider()
     #     fields=["ID","Demand","Pattern"]; fieldsCode=[0,1,0]
     #     createColumnsAttrb(prDem,fields,fieldsCode)
     #     writeDBF(posDem,ppDem,prDem,saveFile,inpname, "_DEMANDS", iface,idx)
 
     if status!=[]:
-        posStat = QgsVectorLayer("point?crs=EPSG:4326", "Status", "memory")
+        posStat = QgsVectorLayer("point", "Status", "memory")
         prStat = posStat.dataProvider()
         fields=["Link_ID","Status/Setting"]; fieldsCode=[0,0]
         createColumnsAttrb(prStat,fields,fieldsCode)
         writeDBF(posStat,ppStat,prStat,saveFile,inpname, "_STATUS", iface,idx)
 
     if emitters!=[]:
-        posEmit = QgsVectorLayer("point?crs=EPSG:4326", "Emitters", "memory")
+        posEmit = QgsVectorLayer("point", "Emitters", "memory")
         prEmit = posEmit.dataProvider()
         fields=["Junc_ID","Coeff."]; fieldsCode=[0,1]
         createColumnsAttrb(prEmit,fields,fieldsCode)
         writeDBF(posEmit,ppEmit,prEmit,saveFile,inpname, "_EMITTERS", iface,idx)
 
     if controls!=[]:
-        posCont = QgsVectorLayer("point?crs=EPSG:4326", "Controls", "memory")
+        posCont = QgsVectorLayer("point", "Controls", "memory")
         prCont = posCont.dataProvider()
         fields=["Controls"]; fieldsCode=[0]
         createColumnsAttrb(prCont,fields,fieldsCode)
         writeDBF(posCont,ppCont,prCont,saveFile,inpname, "_CONTROLS", iface,idx)
 
     if patterns!=[]:
-        posPat = QgsVectorLayer("point?crs=EPSG:4326", "Patterns", "memory")
+        posPat = QgsVectorLayer("point", "Patterns", "memory")
         prPat = posPat.dataProvider()
         fields=["Pattern_ID","Multipliers"]; fieldsCode=[0,0]
         createColumnsAttrb(prPat,fields,fieldsCode)
         writeDBF(posPat,ppPat,prPat,saveFile,inpname, "_PATTERNS", iface,idx)
 
     if curves[0]!=[]:
-        posCurv = QgsVectorLayer("point?crs=EPSG:4326", "Curves", "memory")
+        posCurv = QgsVectorLayer("point", "Curves", "memory")
         prCurv = posCurv.dataProvider()
         fields=["Curve_ID","X-Value","Y-Value","Type"]; fieldsCode=[0,0,0,0]
         createColumnsAttrb(prCurv,fields,fieldsCode)
@@ -656,7 +651,7 @@ def epa2gis(inpname, plugin_path):
 
     # Write Valve Shapefile
     if d.getBinLinkValveCount()>0:
-        posValve = QgsVectorLayer("point?crs=EPSG:4326", "Valve", "memory")
+        posValve = QgsVectorLayer("point", "Valve", "memory")
         prValve = posValve.dataProvider()
         fields=["ID","NodeFrom","NodeTo","Diameter","Type","Setting","MinorLoss"]
         fieldsCode=[0,0,0,1,0,1,1]
@@ -673,19 +668,17 @@ def epa2gis(inpname, plugin_path):
             xx= (float(x1[p])+float(x2[p]))/2
             yy= (float(y1[p])+float(y2[p]))/2
             feature = QgsFeature()
-            point = QgsPointXY(xx,yy)
-            feature.setGeometry(QgsGeometry.fromPointXY(point))
+            point = QgsPoint(xx,yy)
+            feature.setGeometry(QgsGeometry.fromPoint(point))
             feature.setAttributes([linkID[i],ndlConn[0][p],ndlConn[1][p],linkDiameter[i],linkType[i],linkInitSett[i],linkMinorloss[i]])
             prValve.addFeatures([feature])
-        QgsVectorFileWriter.writeAsVectorFormat(posValve,saveFile+"_valves"+'.shp', "utf-8", QgsCoordinateReferenceSystem(posValve.crs().authid()), "ESRI Shapefile")
-        ll = QgsVectorLayer(saveFile + "_valves" + '.shp', inpname[:len(inpname) - 4] + "_valves", "ogr")
-        QgsProject.instance().addMapLayer(ll, False)
-        idx.insertChildNode(0, QgsLayerTreeLayer(ll))
-        ll.loadNamedStyle(plugin_path + "/qmls/" + 'valves' + ".qml")
+        QgsVectorFileWriter.writeAsVectorFormat(posValve,saveFile+"_valves"+'.shp',"utf-8",None,"ESRI Shapefile")
+        ll=iface.addVectorLayer(saveFile+"_valves"+'.shp', inpname[:len(inpname)-4]+"_valves", "ogr")
+        iface.legendInterface().moveLayer( ll, idx )
 
     # Write Pump Shapefile
     if d.getBinLinkPumpCount()>0:
-        posPump = QgsVectorLayer("point?crs=EPSG:4326", "Pump", "memory")
+        posPump = QgsVectorLayer("point", "Pump", "memory")
         prPump = posPump.dataProvider()
         fields=["ID","NodeFrom","NodeTo","Power","Pattern","Curve"]
         fieldsCode=[0,0,0,0,0,0]#,1,1]
@@ -747,8 +740,8 @@ def epa2gis(inpname, plugin_path):
             xx= (float(x1[p])+float(x2[p]))/2
             yy= (float(y1[p])+float(y2[p]))/2
             feature = QgsFeature()
-            point = QgsPointXY(xx,yy)
-            feature.setGeometry(QgsGeometry.fromPointXY(point))
+            point = QgsPoint(xx,yy)
+            feature.setGeometry(QgsGeometry.fromPoint(point))
 
             if Curve==[]:
                 Curve='NULL'
@@ -772,6 +765,7 @@ def epa2gis(inpname, plugin_path):
             if d.getBinCurveCount()==1:
                 w=6
                 for p in range(CurvesTmpIndices[curveIndex]):
+                    print 6+sum(CurvesTmpIndices)
                     feature.setAttribute(w, CurvesTmp[curveIndex][p][0])
                     feature.setAttribute(w+1, CurvesTmp[curveIndex][p][1])
                     w=w+2
@@ -784,52 +778,37 @@ def epa2gis(inpname, plugin_path):
                     w=w+2
 
             prPump.addFeatures([feature])
-        QgsVectorFileWriter.writeAsVectorFormat(posPump,saveFile+"_pumps"+'.shp', "utf-8", QgsCoordinateReferenceSystem(posPump.crs().authid()), "ESRI Shapefile")
-        ll = QgsVectorLayer(saveFile + "_pumps" + '.shp', inpname[:len(inpname) - 4] + "_pumps", "ogr")
-        QgsProject.instance().addMapLayer(ll, False)
-        idx.insertChildNode(0, QgsLayerTreeLayer(ll))
-        ll.loadNamedStyle(plugin_path + "/qmls/" + 'pumps' + ".qml")
-
+        QgsVectorFileWriter.writeAsVectorFormat(posPump,saveFile+"_pumps"+'.shp',"utf-8",None,"ESRI Shapefile")
+        ll=iface.addVectorLayer(saveFile+"_pumps"+'.shp', inpname[:len(inpname)-4]+"_pumps", "ogr")
+        iface.legendInterface().moveLayer( ll, idx )
     if d.getBinLinkPipeCount():
-        QgsVectorFileWriter.writeAsVectorFormat(posPipe,saveFile+"_pipes"+'.shp', "utf-8", QgsCoordinateReferenceSystem(posPipe.crs().authid()), "ESRI Shapefile")
-        ll = QgsVectorLayer(saveFile + "_pipes" + '.shp', inpname[:len(inpname) - 4] + "_pipes", "ogr")
-        QgsProject.instance().addMapLayer(ll, False)
-        idx.insertChildNode(0, QgsLayerTreeLayer(ll))
-        ll.loadNamedStyle(plugin_path + "/qmls/" + 'pipes' + ".qml")
-        iface.mapCanvas().setExtent(ll.extent())
+        QgsVectorFileWriter.writeAsVectorFormat(posPipe,saveFile+"_pipes"+'.shp',"utf-8",None,"ESRI Shapefile")
+        ll=iface.addVectorLayer(saveFile+"_pipes"+'.shp', inpname[:len(inpname)-4]+"_pipes", "ogr")
+        iface.legendInterface().moveLayer( ll, idx )
     if d.getBinNodeJunctionCount():
-        QgsVectorFileWriter.writeAsVectorFormat(posJunction,saveFile+"_junctions"+'.shp', "utf-8", QgsCoordinateReferenceSystem(posJunction.crs().authid()), "ESRI Shapefile")
-        ll = QgsVectorLayer(saveFile + "_junctions" + '.shp', inpname[:len(inpname) - 4] + "_junctions", "ogr")
-        QgsProject.instance().addMapLayer(ll, False)
-        idx.insertChildNode(0, QgsLayerTreeLayer(ll))
-        ll.loadNamedStyle(plugin_path + "/qmls/" + 'junctions' + ".qml")
+        QgsVectorFileWriter.writeAsVectorFormat(posJunction,saveFile+"_junctions"+'.shp',"utf-8",None,"ESRI Shapefile")
+        ll=iface.addVectorLayer(saveFile+"_junctions"+'.shp', inpname[:len(inpname)-4]+"_junctions", "ogr")
+        iface.legendInterface().moveLayer( ll, idx )
     if d.getBinNodeTankCount():
-        QgsVectorFileWriter.writeAsVectorFormat(posTank,saveFile+"_tanks"+'.shp', "utf-8", QgsCoordinateReferenceSystem(posTank.crs().authid()), "ESRI Shapefile")
-        ll = QgsVectorLayer(saveFile + "_tanks" + '.shp', inpname[:len(inpname) - 4] + "_tanks", "ogr")
-        QgsProject.instance().addMapLayer(ll, False)
-        idx.insertChildNode(0, QgsLayerTreeLayer(ll))
-        ll.loadNamedStyle(plugin_path + "/qmls/" + 'tanks' + ".qml")
+        QgsVectorFileWriter.writeAsVectorFormat(posTank,saveFile+"_tanks"+'.shp',"utf-8",None,"ESRI Shapefile")
+        ll=iface.addVectorLayer(saveFile+"_tanks"+'.shp', inpname[:len(inpname)-4]+"_tanks", "ogr")
+        iface.legendInterface().moveLayer( ll, idx )
     if d.getBinNodeReservoirCount():
-        QgsVectorFileWriter.writeAsVectorFormat(posReservoirs,saveFile+"_reservoirs"+'.shp', "utf-8", QgsCoordinateReferenceSystem(posReservoirs.crs().authid()), "ESRI Shapefile")
-        ll = QgsVectorLayer(saveFile + "_reservoirs" + '.shp', inpname[:len(inpname) - 4] + "_reservoirs", "ogr")
-        QgsProject.instance().addMapLayer(ll, False)
-        ll.loadNamedStyle(plugin_path + "/qmls/" + 'reservoirs' + ".qml")
-
-        idx.insertChildNode(0, QgsLayerTreeLayer(ll))
+        QgsVectorFileWriter.writeAsVectorFormat(posReservoirs,saveFile+"_reservoirs"+'.shp',"utf-8",None,"ESRI Shapefile")
+        ll=iface.addVectorLayer(saveFile+"_reservoirs"+'.shp', inpname[:len(inpname)-4]+"_reservoirs", "ogr")
+        iface.legendInterface().moveLayer( ll, idx )
 
     return idx
 
-def writeDBF(pos,pp,pr,saveFile, inpname, param, iface,idx):
-    pos.startEditing()
-    for i in range(len(pp)):
-        feat = QgsFeature()
-        feat.setAttributes(pp[i])
-        pr.addFeatures([feat])
-    epsgCode = pos.crs().authid()
-    QgsVectorFileWriter.writeAsVectorFormat(pos,saveFile + param + '.dbf', "utf-8", QgsCoordinateReferenceSystem(epsgCode), "DBF file")
-    ll = QgsVectorLayer(saveFile + param + '.dbf', inpname[:len(inpname) - 4] + param, "ogr")
-    QgsProject.instance().addMapLayer(ll, False)
-    idx.insertChildNode(0, QgsLayerTreeLayer(ll))
+def writeDBF(pos,pp,pr,saveFile,inpname, param, iface,idx):
+        pos.startEditing()
+        for i in range(len(pp)):
+            feat = QgsFeature()
+            feat.setAttributes(pp[i])
+            pr.addFeatures([feat])
+        QgsVectorFileWriter.writeAsVectorFormat(pos,saveFile+param+'.dbf',"utf-8",None,"DBF file")
+        ll=iface.addVectorLayer(saveFile+param+'.dbf', inpname[:len(inpname)-4]+param, "ogr")
+        iface.legendInterface().moveLayer( ll, idx )
 
 def createColumnsAttrb(pr,fields,fieldsCode):
     for i in range(len(fieldsCode)):
