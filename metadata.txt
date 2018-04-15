@@ -9,9 +9,9 @@
 [general]
 name=ImportEpanetInpFiles
 qgisMinimumVersion=2.0
-description=IMPORT and EXPORT --> EPANET INP Files
+description=IMPORT and EXPORT -- EPANET INP Files
 version=0.8
-author=KIOS Research Center
+author=Marios S. Kyriakou, KIOS Research and Innovation Center of Excellence (KIOS CoE)
 email=mariosmsk@gmail.com
 
 about=This tool can be used to IMPORT EPANET INP File to shapefiles and adds them in the QGIS canvas. Also, the shapefiles stored into the _shapefiles_ folder. Can be used to EXPORT EPANET INP File.
