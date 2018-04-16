@@ -2,7 +2,7 @@
 
 QGIS plugin
 
-This tool can be used to import / converts EPANET Input File to shapefiles and adds them in the QGIS canvas. Also, the shapefiles stored into the _shapefiles_ folder.
+This tool can be used to IMPORT EPANET INP File to shapefiles and adds them in the QGIS canvas. Also, the shapefiles stored into the _shapefiles_ folder. Can be used to EXPORT EPANET INP File.
 
 QGIS 2
 

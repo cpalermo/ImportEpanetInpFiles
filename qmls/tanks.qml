@@ -1,9 +1,9 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis simplifyDrawingTol="1" simplifyLocal="1" version="2.99.0-Master" readOnly="0" minScale="1e+8" simplifyMaxScale="1" labelsEnabled="1" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" simplifyDrawingHints="0" maxScale="-4.65661e-10">
-  <renderer-v2 forceraster="0" enableorderby="0" type="singleSymbol" symbollevels="0">
+<qgis simplifyMaxScale="1" readOnly="0" version="3.0.0-Girona" simplifyDrawingTol="1" maxScale="0" minScale="0" simplifyAlgorithm="0" labelsEnabled="0" simplifyDrawingHints="0" hasScaleBasedVisibilityFlag="0" simplifyLocal="1">
+  <renderer-v2 type="singleSymbol" forceraster="0" enableorderby="0" symbollevels="0">
     <symbols>
-      <symbol alpha="1" name="0" type="marker" clip_to_extent="1">
-        <layer enabled="1" locked="0" class="SimpleMarker" pass="0">
+      <symbol name="0" type="marker" alpha="1" clip_to_extent="1">
+        <layer enabled="1" class="SimpleMarker" locked="0" pass="0">
           <prop v="0" k="angle"/>
           <prop v="135,126,227,255" k="color"/>
           <prop v="1" k="horizontal_anchor_point"/>
@@ -24,9 +24,9 @@
           <prop v="1" k="vertical_anchor_point"/>
           <data_defined_properties>
             <Option type="Map">
-              <Option name="name" value="" type="QString"/>
+              <Option value="" name="name" type="QString"/>
               <Option name="properties"/>
-              <Option name="type" value="collection" type="QString"/>
+              <Option value="collection" name="type" type="QString"/>
             </Option>
           </data_defined_properties>
         </layer>
@@ -35,28 +35,8 @@
     <rotation/>
     <sizescale/>
   </renderer-v2>
-  <labeling type="simple">
-    <settings>
-      <text-style textColor="0,0,0,255" textOpacity="1" fontWordSpacing="0" previewBkgrdColor="#ffffff" fontSize="11" blendMode="0" multilineHeight="1" fontFamily="MS Shell Dlg 2" fontSizeUnit="Point" fontUnderline="0" fontItalic="0" fontCapitals="0" fontSizeMapUnitScale="3x:0,0,0,0,0,0" namedStyle="Κανονικά" fontWeight="50" useSubstitutions="0" fontStrikeout="0" fontLetterSpacing="0" isExpression="1" fieldName="dc_id">
-        <text-buffer bufferColor="255,255,255,255" bufferBlendMode="0" bufferSize="1" bufferNoFill="0" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferDraw="0" bufferOpacity="1" bufferSizeUnits="MM" bufferJoinStyle="64"/>
-        <background shapeSVGFile="" shapeSizeUnit="MM" shapeOffsetUnit="MM" shapeFillColor="255,255,255,255" shapeSizeType="0" shapeBlendMode="0" shapeRotation="0" shapeRotationType="0" shapeSizeX="0" shapeJoinStyle="64" shapeRadiiY="0" shapeBorderColor="128,128,128,255" shapeOffsetY="0" shapeRadiiMapUnitScale="3x:0,0,0,0,0,0" shapeRadiiUnit="MM" shapeDraw="0" shapeOffsetX="0" shapeBorderWidthMapUnitScale="3x:0,0,0,0,0,0" shapeSizeMapUnitScale="3x:0,0,0,0,0,0" shapeOffsetMapUnitScale="3x:0,0,0,0,0,0" shapeSizeY="0" shapeBorderWidthUnit="MM" shapeBorderWidth="0" shapeOpacity="1" shapeType="0" shapeRadiiX="0"/>
-        <shadow shadowRadiusUnit="MM" shadowRadius="1.5" shadowOffsetMapUnitScale="3x:0,0,0,0,0,0" shadowRadiusMapUnitScale="3x:0,0,0,0,0,0" shadowOffsetUnit="MM" shadowOffsetDist="1" shadowScale="100" shadowUnder="0" shadowOpacity="0.7" shadowDraw="0" shadowOffsetGlobal="1" shadowColor="0,0,0,255" shadowBlendMode="6" shadowRadiusAlphaOnly="0" shadowOffsetAngle="135"/>
-        <substitutions/>
-      </text-style>
-      <text-format reverseDirectionSymbol="0" multilineAlign="0" plussign="0" formatNumbers="0" decimals="3" placeDirectionSymbol="0" leftDirectionSymbol="&lt;" rightDirectionSymbol=">" wrapChar="" addDirectionSymbol="0"/>
-      <placement predefinedPositionOrder="TR,TL,BR,BL,R,L,TSR,BSR" maxCurvedCharAngleOut="-20" placement="0" repeatDistance="0" fitInPolygonOnly="0" offsetUnits="MapUnit" placementFlags="0" yOffset="0" centroidInside="0" quadOffset="4" repeatDistanceUnits="MM" repeatDistanceMapUnitScale="3x:0,0,0,0,0,0" distMapUnitScale="3x:0,0,0,0,0,0" preserveRotation="1" offsetType="0" dist="0" rotationAngle="0" centroidWhole="0" labelOffsetMapUnitScale="3x:0,0,0,0,0,0" xOffset="0" priority="5" distUnits="MM" maxCurvedCharAngleIn="20"/>
-      <rendering fontLimitPixelSize="0" fontMaxPixelSize="10000" scaleVisibility="0" obstacle="1" minFeatureSize="0" maxNumLabels="2000" labelPerPart="0" obstacleType="0" fontMinPixelSize="3" mergeLines="0" zIndex="0" scaleMin="1" scaleMax="10000000" displayAll="0" obstacleFactor="1" upsidedownLabels="0" drawLabels="1" limitNumLabels="0"/>
-      <dd_properties>
-        <Option type="Map">
-          <Option name="name" value="" type="QString"/>
-          <Option name="properties"/>
-          <Option name="type" value="collection" type="QString"/>
-        </Option>
-      </dd_properties>
-    </settings>
-  </labeling>
   <customproperties>
-    <property key="embeddedWidgets/count" value="0"/>
+    <property value="0" key="embeddedWidgets/count"/>
     <property key="variableNames"/>
     <property key="variableValues"/>
   </customproperties>
@@ -64,16 +44,33 @@
   <featureBlendMode>0</featureBlendMode>
   <layerOpacity>1</layerOpacity>
   <SingleCategoryDiagramRenderer diagramType="Histogram" attributeLegend="1">
-    <DiagramCategory lineSizeScale="3x:0,0,0,0,0,0" labelPlacementMethod="XHeight" minScaleDenominator="-4.65661e-10" sizeScale="3x:0,0,0,0,0,0" width="15" sizeType="MM" diagramOrientation="Up" barWidth="5" minimumSize="0" penAlpha="255" rotationOffset="270" height="15" scaleBasedVisibility="0" opacity="1" lineSizeType="MM" penWidth="0" penColor="#000000" backgroundAlpha="255" maxScaleDenominator="1e+8" scaleDependency="Area" enabled="0" backgroundColor="#ffffff">
+    <DiagramCategory scaleDependency="Area" barWidth="5" diagramOrientation="Up" backgroundColor="#ffffff" rotationOffset="0" penColor="#000000" penWidth="0" labelPlacementMethod="XHeight" scaleBasedVisibility="0" height="15" lineSizeScale="3x:0,0,0,0,0,0" minimumSize="0" maxScaleDenominator="1e+8" sizeType="MM" sizeScale="3x:0,0,0,0,0,0" backgroundAlpha="255" lineSizeType="MM" penAlpha="255" enabled="0" width="15" minScaleDenominator="0" opacity="1">
       <fontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
+      <attribute field="" label="" color="#000000"/>
     </DiagramCategory>
   </SingleCategoryDiagramRenderer>
-  <DiagramLayerSettings linePlacementFlags="18" zIndex="0" obstacle="0" dist="0" placement="0" priority="0" showAll="1">
+  <DiagramLayerSettings placement="0" obstacle="0" dist="0" priority="0" zIndex="0" linePlacementFlags="2" showAll="1">
     <properties>
       <Option type="Map">
-        <Option name="name" value="" type="QString"/>
-        <Option name="properties"/>
-        <Option name="type" value="collection" type="QString"/>
+        <Option value="" name="name" type="QString"/>
+        <Option name="properties" type="Map">
+          <Option name="positionX" type="Map">
+            <Option value="true" name="active" type="bool"/>
+            <Option value="ID" name="field" type="QString"/>
+            <Option value="2" name="type" type="int"/>
+          </Option>
+          <Option name="positionY" type="Map">
+            <Option value="true" name="active" type="bool"/>
+            <Option value="ID" name="field" type="QString"/>
+            <Option value="2" name="type" type="int"/>
+          </Option>
+          <Option name="show" type="Map">
+            <Option value="true" name="active" type="bool"/>
+            <Option value="ID" name="field" type="QString"/>
+            <Option value="2" name="type" type="int"/>
+          </Option>
+        </Option>
+        <Option value="collection" name="type" type="QString"/>
       </Option>
     </properties>
   </DiagramLayerSettings>
@@ -81,54 +78,57 @@
     <field name="ID">
       <editWidget type="TextEdit">
         <config>
-          <Option/>
+          <Option type="Map">
+            <Option value="false" name="IsMultiline" type="bool"/>
+            <Option value="false" name="UseHtml" type="bool"/>
+          </Option>
         </config>
       </editWidget>
     </field>
     <field name="Elevation">
-      <editWidget type="Range">
+      <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
     <field name="InitLevel">
-      <editWidget type="Range">
+      <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
     <field name="MinLevel">
-      <editWidget type="Range">
+      <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
     <field name="MaxLevel">
-      <editWidget type="Range">
+      <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
     <field name="Diameter">
-      <editWidget type="Range">
+      <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
     <field name="MinVolume">
-      <editWidget type="Range">
+      <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
       </editWidget>
     </field>
     <field name="VolumeCurv">
-      <editWidget type="Range">
+      <editWidget type="TextEdit">
         <config>
           <Option/>
         </config>
@@ -148,24 +148,24 @@
   <excludeAttributesWMS/>
   <excludeAttributesWFS/>
   <defaults>
-    <default expression="" field="ID" applyOnUpdate="0"/>
-    <default expression="" field="Elevation" applyOnUpdate="0"/>
-    <default expression="" field="InitLevel" applyOnUpdate="0"/>
-    <default expression="" field="MinLevel" applyOnUpdate="0"/>
-    <default expression="" field="MaxLevel" applyOnUpdate="0"/>
-    <default expression="" field="Diameter" applyOnUpdate="0"/>
-    <default expression="" field="MinVolume" applyOnUpdate="0"/>
-    <default expression="" field="VolumeCurv" applyOnUpdate="0"/>
+    <default field="ID" expression="" applyOnUpdate="0"/>
+    <default field="Elevation" expression="0" applyOnUpdate="0"/>
+    <default field="InitLevel" expression="10" applyOnUpdate="0"/>
+    <default field="MinLevel" expression="0" applyOnUpdate="0"/>
+    <default field="MaxLevel" expression="20" applyOnUpdate="0"/>
+    <default field="Diameter" expression="50" applyOnUpdate="0"/>
+    <default field="MinVolume" expression="0" applyOnUpdate="0"/>
+    <default field="VolumeCurv" expression="''" applyOnUpdate="0"/>
   </defaults>
   <constraints>
-    <constraint field="ID" unique_strength="0" constraints="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="Elevation" unique_strength="0" constraints="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="InitLevel" unique_strength="0" constraints="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="MinLevel" unique_strength="0" constraints="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="MaxLevel" unique_strength="0" constraints="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="Diameter" unique_strength="0" constraints="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="MinVolume" unique_strength="0" constraints="0" exp_strength="0" notnull_strength="0"/>
-    <constraint field="VolumeCurv" unique_strength="0" constraints="0" exp_strength="0" notnull_strength="0"/>
+    <constraint field="ID" notnull_strength="2" constraints="1" exp_strength="0" unique_strength="0"/>
+    <constraint field="Elevation" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
+    <constraint field="InitLevel" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
+    <constraint field="MinLevel" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
+    <constraint field="MaxLevel" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
+    <constraint field="Diameter" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
+    <constraint field="MinVolume" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
+    <constraint field="VolumeCurv" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
   </constraints>
   <constraintExpressions>
     <constraint exp="" desc="" field="ID"/>
@@ -178,19 +178,24 @@
     <constraint exp="" desc="" field="VolumeCurv"/>
   </constraintExpressions>
   <attributeactions>
-    <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
+    <defaultAction value="{65700e89-4f41-4ed8-a9d2-92ae998580d2}" key="Canvas"/>
+    <actionsetting id="{abf0f75d-d540-4dba-95b7-0a5e773d384c}" action="" capture="0" name="" type="0" icon="" notificationMessage="" shortTitle="">
+      <actionScope id="Field"/>
+      <actionScope id="Feature"/>
+      <actionScope id="Canvas"/>
+    </actionsetting>
   </attributeactions>
-  <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+  <attributetableconfig sortExpression="" actionWidgetStyle="dropDown" sortOrder="0">
     <columns>
-      <column hidden="0" name="ID" type="field" width="-1"/>
-      <column hidden="0" name="Elevation" type="field" width="-1"/>
-      <column hidden="0" name="InitLevel" type="field" width="-1"/>
-      <column hidden="0" name="MinLevel" type="field" width="-1"/>
-      <column hidden="0" name="MaxLevel" type="field" width="-1"/>
-      <column hidden="0" name="Diameter" type="field" width="-1"/>
-      <column hidden="0" name="MinVolume" type="field" width="-1"/>
-      <column hidden="0" name="VolumeCurv" type="field" width="-1"/>
-      <column hidden="1" type="actions" width="-1"/>
+      <column name="ID" type="field" width="-1" hidden="0"/>
+      <column name="Elevation" type="field" width="-1" hidden="0"/>
+      <column name="InitLevel" type="field" width="-1" hidden="0"/>
+      <column name="MinLevel" type="field" width="-1" hidden="0"/>
+      <column name="MaxLevel" type="field" width="-1" hidden="0"/>
+      <column name="Diameter" type="field" width="-1" hidden="0"/>
+      <column name="MinVolume" type="field" width="-1" hidden="0"/>
+      <column name="VolumeCurv" type="field" width="-1" hidden="0"/>
+      <column type="actions" width="-1" hidden="1"/>
     </columns>
   </attributetableconfig>
   <editform>.</editform>
@@ -227,14 +232,14 @@ def my_form_open(dialog, layer, feature):
     <field name="VolumeCurv" editable="1"/>
   </editable>
   <labelOnTop>
-    <field labelOnTop="0" name="Diameter"/>
-    <field labelOnTop="0" name="Elevation"/>
-    <field labelOnTop="0" name="ID"/>
-    <field labelOnTop="0" name="InitLevel"/>
-    <field labelOnTop="0" name="MaxLevel"/>
-    <field labelOnTop="0" name="MinLevel"/>
-    <field labelOnTop="0" name="MinVolume"/>
-    <field labelOnTop="0" name="VolumeCurv"/>
+    <field name="Diameter" labelOnTop="0"/>
+    <field name="Elevation" labelOnTop="0"/>
+    <field name="ID" labelOnTop="0"/>
+    <field name="InitLevel" labelOnTop="0"/>
+    <field name="MaxLevel" labelOnTop="0"/>
+    <field name="MinLevel" labelOnTop="0"/>
+    <field name="MinVolume" labelOnTop="0"/>
+    <field name="VolumeCurv" labelOnTop="0"/>
   </labelOnTop>
   <widgets/>
   <conditionalstyles>
@@ -243,6 +248,6 @@ def my_form_open(dialog, layer, feature):
   </conditionalstyles>
   <expressionfields/>
   <previewExpression>ID</previewExpression>
-  <mapTip>dc_id</mapTip>
+  <mapTip></mapTip>
   <layerGeometryType>0</layerGeometryType>
 </qgis>
