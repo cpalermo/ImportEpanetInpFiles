@@ -35,7 +35,7 @@ changelog=2016-03-14  ImportEpanetInpFiles 0.2:
 		Update fields names, Remove section Demands, Add Demand and Pattern columns based on demand categories
 	  2017-10-13  ImportEpanetInpFiles 0.7:
 		Fixed error with curves
-	  2017-04-13  ImportEpanetInpFiles 0.8:
+	  2018-04-13  ImportEpanetInpFiles 0.8:
 		Add qml files, Clear code, Fix bug in SOURCES, Add EXPORT EPANET INP File
 	  2018-06-14  ImportEpanetInpFiles 0.9:
 	    Ignore nodes without coordinates
