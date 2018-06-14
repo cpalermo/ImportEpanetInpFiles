@@ -63,17 +63,17 @@ def epa2gis(inpname):
     idx = root.insertGroup(0, inpname[:len(inpname) - 4])
 
     xy = d.getBinNodeCoordinates()
-    x = xy[0]
-    y = xy[1]
-    vertx = xy[2]
-    verty = xy[3]
+    ndCoordsID = xy[0]
+    x = xy[1]
+    y = xy[2]
+    vertx = xy[3]
+    verty = xy[4]
     vertxyFinal = []
     for i in range(len(vertx)):
         vertxy = []
         for u in range(len(vertx[i])):
             vertxy.append([float(vertx[i][u]), float(verty[i][u])])
-        if vertxy:
-            vertxyFinal.append(vertxy)
+        vertxyFinal.append(vertxy)
 
     otherDemads = d.getBinNodeBaseDemandsDemSection()
     ndID = d.getBinNodeNameID()
@@ -151,13 +151,8 @@ def epa2gis(inpname):
         pIndex = d.getBinLinkPumpIndex()
         vIndex = d.getBinLinkValveIndex()
         ndlConn = d.getBinNodesConnectingLinksID()
-        x1 = []
-        x2 = []
-        y1 = []
-        y2 = []
         stat = d.getBinLinkInitialStatus()
 
-        kk = 0
         ch = 0
         linkID = d.getBinLinkNameID()
         linkLengths = d.getBinLinkLength()
@@ -228,59 +223,68 @@ def epa2gis(inpname):
 
     for i in range(ss):
         if i < d.getBinNodeJunctionCount():
-            featJ = QgsFeature()
-            point = QgsPointXY(float(x[i]), float(y[i]))
-            featJ.initAttributes(2 + len(ndBaseTmp[0]) * 2)
-            featJ.setGeometry(QgsGeometry.fromPointXY(point))
-            featJ.setAttribute(0, ndID[i])
-            featJ.setAttribute(1, ndEle[i])
-            w = 2
-            for j in range(0, len(ndBaseTmp[0])):
-                featJ.setAttribute(w, ndBaseTmp[i][j])
-                featJ.setAttribute(w + 1, ndPatTmp[i][j])
-                w = w + 2
-            prJunction.addFeatures([featJ])
-
+            try:
+                ndIndexNew = ndCoordsID.index(ndID[i])
+                featJ = QgsFeature()
+                point = QgsPointXY(float(x[ndIndexNew]), float(y[ndIndexNew]))
+                featJ.initAttributes(2 + len(ndBaseTmp[0]) * 2)
+                featJ.setGeometry(QgsGeometry.fromPointXY(point))
+                featJ.setAttribute(0, ndID[i])
+                featJ.setAttribute(1, ndEle[i])
+                w = 2
+                for j in range(0, len(ndBaseTmp[0])):
+                    featJ.setAttribute(w, ndBaseTmp[i][j])
+                    featJ.setAttribute(w + 1, ndPatTmp[i][j])
+                    w = w + 2
+                prJunction.addFeatures([featJ])
+            except:
+                pass
         if i < nlinkCount:
             if len(stat) == i:
                 ch = 1
             if ch == 1:
                 stat.append('OPEN')
 
-            x1.append(x[ndID.index(d.getBinLinkFromNode()[i])])
-            y1.append(y[ndID.index(d.getBinLinkFromNode()[i])])
-            x2.append(x[ndID.index(d.getBinLinkToNode()[i])])
-            y2.append(y[ndID.index(d.getBinLinkToNode()[i])])
+            try:
+                x1 = x[ndCoordsID.index(d.getBinLinkFromNode()[i])]
+                y1 = y[ndCoordsID.index(d.getBinLinkFromNode()[i])]
+                x2 = x[ndCoordsID.index(d.getBinLinkToNode()[i])]
+                y2 = y[ndCoordsID.index(d.getBinLinkToNode()[i])]
 
-            if i in pIndex:
-                pass
-            elif i in vIndex:
-                pass
-            else:
-                point1 = QgsPointXY(float(x1[i]), float(y1[i]))
-                point2 = QgsPointXY(float(x2[i]), float(y2[i]))
-                featPipe = QgsFeature()
-                if vertx[i]:
-                    parts = []
-                    parts.append(point1)
-                    for mm in range(len(vertxyFinal[kk])):
-                        a = vertxyFinal[kk][mm]
-                        parts.append(QgsPointXY(a[0], a[1]))
-                    parts.append(point2)
-                    featPipe.setGeometry((QgsGeometry.fromPolylineXY(parts)))
-                    kk = kk + 1
+                if i in pIndex:
+                    pass
+                elif i in vIndex:
+                    pass
                 else:
-                    featPipe.setGeometry(QgsGeometry.fromPolylineXY([point1, point2]))
+                    point1 = QgsPointXY(float(x1), float(y1))
+                    point2 = QgsPointXY(float(x2), float(y2))
+                    featPipe = QgsFeature()
+                    if vertx[i]:
+                        parts = []
+                        parts.append(point1)
+                        for mm in range(len(vertxyFinal[i])):
+                            a = vertxyFinal[i][mm]
+                            parts.append(QgsPointXY(a[0], a[1]))
+                        parts.append(point2)
+                        featPipe.setGeometry((QgsGeometry.fromPolylineXY(parts)))
+                    else:
+                        featPipe.setGeometry(QgsGeometry.fromPolylineXY([point1, point2]))
 
-                featPipe.setAttributes(
-                    [linkID[i], ndlConn[0][i], ndlConn[1][i], stat[i], linkLengths[i], linkDiameters[i], linkRough[i],
-                     linkMinorloss[i]])
-                prPipe.addFeatures([featPipe])
+                    featPipe.setAttributes(
+                        [linkID[i], ndlConn[0][i], ndlConn[1][i], stat[i], linkLengths[i], linkDiameters[i], linkRough[i],
+                         linkMinorloss[i]])
+                    prPipe.addFeatures([featPipe])
+            except:
+                pass
 
         if i < d.getBinNodeTankCount():
             p = d.getBinNodeTankIndex()[i] - 1
+            try:
+                ndIndexNew = ndCoordsID.index(ndID[p])
+            except:
+                continue
             featTank = QgsFeature()
-            point = QgsPointXY(float(x[p]), float(y[p]))
+            point = QgsPointXY(float(x[ndIndexNew]), float(y[ndIndexNew]))
             featTank.setGeometry(QgsGeometry.fromPointXY(point))
             featTank.setAttributes(
                 [ndTankID[i], ndTankelevation[i], initiallev[i], minimumlev[i], maximumlev[i], diameter[i],
@@ -289,8 +293,12 @@ def epa2gis(inpname):
 
         if i < d.getBinNodeReservoirCount():
             p = d.getBinNodeReservoirIndex()[i] - 1
+            try:
+                ndIndexNew = ndCoordsID.index(ndID[p])
+            except:
+                continue
             feature = QgsFeature()
-            point = QgsPointXY(float(x[p]), float(y[p]))
+            point = QgsPointXY(float(x[ndIndexNew]), float(y[ndIndexNew]))
             feature.setGeometry(QgsGeometry.fromPointXY(point))
             feature.setAttributes([ndID[p], head[i]])
             prReservoirs.addFeatures([feature])
@@ -636,8 +644,11 @@ def epa2gis(inpname):
         linkMinorloss = d.getBinLinkValveMinorLoss()
 
         for i, p in enumerate(d.getBinLinkValveIndex()):
-            point1 = QgsPointXY(float(x[ndID.index(d.getBinLinkFromNode()[p])]), float(y[ndID.index(d.getBinLinkFromNode()[p])]))
-            point2 = QgsPointXY(float(x[ndID.index(d.getBinLinkToNode()[p])]), float(y[ndID.index(d.getBinLinkToNode()[p])]))
+            try:
+                point1 = QgsPointXY(float(x[ndCoordsID.index(d.getBinLinkFromNode()[p])]), float(y[ndCoordsID.index(d.getBinLinkFromNode()[p])]))
+                point2 = QgsPointXY(float(x[ndCoordsID.index(d.getBinLinkToNode()[p])]), float(y[ndCoordsID.index(d.getBinLinkToNode()[p])]))
+            except:
+                continue
             feature = QgsFeature()
             feature.setGeometry(QgsGeometry.fromPolylineXY([point1, point2]))
 
@@ -723,8 +734,11 @@ def epa2gis(inpname):
                     if ppatt[uu] == pumpID[i]:
                         pattern = patternsIDs[uu]
 
-            point1 = QgsPointXY(float(x[ndID.index(d.getBinLinkFromNode()[p])]), float(y[ndID.index(d.getBinLinkFromNode()[p])]))
-            point2 = QgsPointXY(float(x[ndID.index(d.getBinLinkToNode()[p])]), float(y[ndID.index(d.getBinLinkToNode()[p])]))
+            try:
+                point1 = QgsPointXY(float(x[ndCoordsID.index(d.getBinLinkFromNode()[p])]), float(y[ndCoordsID.index(d.getBinLinkFromNode()[p])]))
+                point2 = QgsPointXY(float(x[ndCoordsID.index(d.getBinLinkToNode()[p])]), float(y[ndCoordsID.index(d.getBinLinkToNode()[p])]))
+            except:
+                continue
             feature = QgsFeature()
             feature.setGeometry(QgsGeometry.fromPolylineXY([point1, point2]))
 
