@@ -508,6 +508,7 @@ def getBinInfo():
     sec = [0] * num
     x = []
     y = []
+    nodewithCoords = []
     # Create a list.
     vertx = []
     verty = []
@@ -544,7 +545,7 @@ def getBinInfo():
                     qualitySection, rulesSection, sourcesSection, energySection, reactionsSection,
                     reactionsOptionSection, mixingSection,  # 51#52#53#54#55#56#57
                     timesSection, optionsSection, reportSection, labelsSection,  # 58#59#60#61
-                    nodeJunctionsDemSection, nodeJunctionsIDDemSection, nodeJunctionsPatDemSection]  # 62#63#64
+                    nodeJunctionsDemSection, nodeJunctionsIDDemSection, nodeJunctionsPatDemSection, nodewithCoords]  # 62#63#64#65
 
         elif "[JUNCTIONS]" in s1:
             sec[0] = 1
@@ -879,6 +880,7 @@ def getBinInfo():
             mm = s1.split()
             if len(mm) > 2:
                 if mm[0][0] != ';':
+                    nodewithCoords.append(mm[0])
                     x.append(float(mm[1]))
                     y.append(float(mm[2]))
 
@@ -1019,8 +1021,8 @@ def getBinInfo():
 # Node Coordinates
 def getBinNodeCoordinates():
     global mm
-    return mm[40], mm[41], mm[42], mm[43]  # ,mm[44],mm[45],mm[46],mm[47]
-    # x,y,x1,y1,x2,y2,vertx,verty] #40#41#42#43#44#45#46#47
+    return mm[65], mm[40], mm[41], mm[42], mm[43]  # ,mm[44],mm[45],mm[46],mm[47]
+    # x,y,x1,y1,x2,y2,vertx,verty] #65#40#41#42#43#44#45#46#47
 
 
 EN_ELEVATION = 0  # /* Node parameters */

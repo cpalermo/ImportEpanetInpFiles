@@ -10,7 +10,7 @@
 name=ImportEpanetInpFiles
 qgisMinimumVersion=2.0
 description=IMPORT and EXPORT -- EPANET INP Files
-version=0.8
+version=0.9
 author=Marios S. Kyriakou, KIOS Research and Innovation Center of Excellence (KIOS CoE)
 email=mariosmsk@gmail.com
 
@@ -37,6 +37,8 @@ changelog=2016-03-14  ImportEpanetInpFiles 0.2:
 		Fixed error with curves
 	  2017-04-13  ImportEpanetInpFiles 0.8:
 		Add qml files, Clear code, Fix bug in SOURCES, Add EXPORT EPANET INP File
+	  2018-06-14  ImportEpanetInpFiles 0.9:
+	    Ignore nodes without coordinates
 		
 # Tags are comma separated with spaces allowed
 tags=epanet,import,export,inp,network
