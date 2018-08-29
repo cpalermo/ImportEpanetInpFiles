@@ -543,89 +543,92 @@ def epa2gis(inpname):
                 prOpt.addAttributes([QgsField("DampLimit", QVariant.String)])
                 ppOpt.append(options[i][1])
 
-    writeDBF(posOpt, [ppOpt], prOpt, saveFile, inpname, "_OPTIONS", idx)
+    try:
+        writeDBF(posOpt, [ppOpt], prOpt, saveFile, inpname, "_OPTIONS", idx)
 
-    writeDBF(posRep, [ppRep], prRep, saveFile, inpname, "_REPORT", idx)
+        writeDBF(posRep, [ppRep], prRep, saveFile, inpname, "_REPORT", idx)
 
-    #if times:
-    writeDBF(posTimes, [ppTimes], prTimes, saveFile, inpname, "_TIMES", idx)
+        #if times:
+        writeDBF(posTimes, [ppTimes], prTimes, saveFile, inpname, "_TIMES", idx)
 
-    #if energy:
-    writeDBF(posE, [ppE], prE, saveFile, inpname, "_ENERGY", idx)
+        #if energy:
+        writeDBF(posE, [ppE], prE, saveFile, inpname, "_ENERGY", idx)
 
-    #if optReactions:
-    writeDBF(posO, [ppO], prO, saveFile, inpname, "_REACTIONS", idx)
+        #if optReactions:
+        writeDBF(posO, [ppO], prO, saveFile, inpname, "_REACTIONS", idx)
 
-    posMix = QgsVectorLayer("point?crs=EPSG:4326", "Mixing", "memory")
-    prMix = posMix.dataProvider()
-    fields = ["Tank_ID", "Model", "Fraction"]
-    fieldsCode = [0, 0, 1]  # 0 String, 1 Double
-    createColumnsAttrb(prMix, fields, fieldsCode)
-    writeDBF(posMix, ppMix, prMix, saveFile, inpname, "_MIXING", idx)
+        posMix = QgsVectorLayer("point?crs=EPSG:4326", "Mixing", "memory")
+        prMix = posMix.dataProvider()
+        fields = ["Tank_ID", "Model", "Fraction"]
+        fieldsCode = [0, 0, 1]  # 0 String, 1 Double
+        createColumnsAttrb(prMix, fields, fieldsCode)
+        writeDBF(posMix, ppMix, prMix, saveFile, inpname, "_MIXING", idx)
 
-    posReact = QgsVectorLayer("point?crs=EPSG:4326", "ReactionsI", "memory")
-    prReact = posReact.dataProvider()
-    fields = ["Type", "Pipe/Tank", "Coeff."]
-    fieldsCode = [0, 0, 1]
-    createColumnsAttrb(prReact, fields, fieldsCode)
-    writeDBF(posReact, ppReactions, prReact, saveFile, inpname, "_REACTIONS_I", idx)
+        posReact = QgsVectorLayer("point?crs=EPSG:4326", "ReactionsI", "memory")
+        prReact = posReact.dataProvider()
+        fields = ["Type", "Pipe/Tank", "Coeff."]
+        fieldsCode = [0, 0, 1]
+        createColumnsAttrb(prReact, fields, fieldsCode)
+        writeDBF(posReact, ppReactions, prReact, saveFile, inpname, "_REACTIONS_I", idx)
 
-    posSourc = QgsVectorLayer("point?crs=EPSG:4326", "Sources", "memory")
-    prSourc = posSourc.dataProvider()
-    fields = ["Node_ID", "Type", "Strength", "Pattern"]
-    fieldsCode = [0, 0, 1, 0]
-    createColumnsAttrb(prSourc, fields, fieldsCode)
-    writeDBF(posSourc, ppSourc, prSourc, saveFile, inpname, "_SOURCES", idx)
+        posSourc = QgsVectorLayer("point?crs=EPSG:4326", "Sources", "memory")
+        prSourc = posSourc.dataProvider()
+        fields = ["Node_ID", "Type", "Strength", "Pattern"]
+        fieldsCode = [0, 0, 1, 0]
+        createColumnsAttrb(prSourc, fields, fieldsCode)
+        writeDBF(posSourc, ppSourc, prSourc, saveFile, inpname, "_SOURCES", idx)
 
-    posRul = QgsVectorLayer("point?crs=EPSG:4326", "Rules", "memory")
-    prRul = posRul.dataProvider()
-    fields = ["Rule_ID", "Rule"]
-    fieldsCode = [0, 0]
-    createColumnsAttrb(prRul, fields, fieldsCode)
-    writeDBF(posRul, ppRul, prRul, saveFile, inpname, "_RULES", idx)
+        posRul = QgsVectorLayer("point?crs=EPSG:4326", "Rules", "memory")
+        prRul = posRul.dataProvider()
+        fields = ["Rule_ID", "Rule"]
+        fieldsCode = [0, 0]
+        createColumnsAttrb(prRul, fields, fieldsCode)
+        writeDBF(posRul, ppRul, prRul, saveFile, inpname, "_RULES", idx)
 
-    posQual = QgsVectorLayer("point?crs=EPSG:4326", "Sources", "memory")
-    prQual = posQual.dataProvider()
-    fields = ["Node_ID", "Init_Qual"]
-    fieldsCode = [0, 1]
-    createColumnsAttrb(prQual, fields, fieldsCode)
-    writeDBF(posQual, ppQual, prQual, saveFile, inpname, "_QUALITY", idx)
+        posQual = QgsVectorLayer("point?crs=EPSG:4326", "Sources", "memory")
+        prQual = posQual.dataProvider()
+        fields = ["Node_ID", "Init_Qual"]
+        fieldsCode = [0, 1]
+        createColumnsAttrb(prQual, fields, fieldsCode)
+        writeDBF(posQual, ppQual, prQual, saveFile, inpname, "_QUALITY", idx)
 
-    posStat = QgsVectorLayer("point?crs=EPSG:4326", "Status", "memory")
-    prStat = posStat.dataProvider()
-    fields = ["Link_ID", "Status/Setting"]
-    fieldsCode = [0, 0]
-    createColumnsAttrb(prStat, fields, fieldsCode)
-    writeDBF(posStat, ppStat, prStat, saveFile, inpname, "_STATUS", idx)
+        posStat = QgsVectorLayer("point?crs=EPSG:4326", "Status", "memory")
+        prStat = posStat.dataProvider()
+        fields = ["Link_ID", "Status/Setting"]
+        fieldsCode = [0, 0]
+        createColumnsAttrb(prStat, fields, fieldsCode)
+        writeDBF(posStat, ppStat, prStat, saveFile, inpname, "_STATUS", idx)
 
-    posEmit = QgsVectorLayer("point?crs=EPSG:4326", "Emitters", "memory")
-    prEmit = posEmit.dataProvider()
-    fields = ["Junc_ID", "Coeff."]
-    fieldsCode = [0, 1]
-    createColumnsAttrb(prEmit, fields, fieldsCode)
-    writeDBF(posEmit, ppEmit, prEmit, saveFile, inpname, "_EMITTERS", idx)
+        posEmit = QgsVectorLayer("point?crs=EPSG:4326", "Emitters", "memory")
+        prEmit = posEmit.dataProvider()
+        fields = ["Junc_ID", "Coeff."]
+        fieldsCode = [0, 1]
+        createColumnsAttrb(prEmit, fields, fieldsCode)
+        writeDBF(posEmit, ppEmit, prEmit, saveFile, inpname, "_EMITTERS", idx)
 
-    posCont = QgsVectorLayer("point?crs=EPSG:4326", "Controls", "memory")
-    prCont = posCont.dataProvider()
-    fields = ["Controls"]
-    fieldsCode = [0]
-    createColumnsAttrb(prCont, fields, fieldsCode)
-    writeDBF(posCont, ppCont, prCont, saveFile, inpname, "_CONTROLS", idx)
+        posCont = QgsVectorLayer("point?crs=EPSG:4326", "Controls", "memory")
+        prCont = posCont.dataProvider()
+        fields = ["Controls"]
+        fieldsCode = [0]
+        createColumnsAttrb(prCont, fields, fieldsCode)
+        writeDBF(posCont, ppCont, prCont, saveFile, inpname, "_CONTROLS", idx)
 
-    posPat = QgsVectorLayer("point?crs=EPSG:4326", "Patterns", "memory")
-    prPat = posPat.dataProvider()
-    fields = ["Pattern_ID", "Multipliers"]
-    fieldsCode = [0, 0]
-    createColumnsAttrb(prPat, fields, fieldsCode)
-    writeDBF(posPat, ppPat, prPat, saveFile, inpname, "_PATTERNS", idx)
+        posPat = QgsVectorLayer("point?crs=EPSG:4326", "Patterns", "memory")
+        prPat = posPat.dataProvider()
+        fields = ["Pattern_ID", "Multipliers"]
+        fieldsCode = [0, 0]
+        createColumnsAttrb(prPat, fields, fieldsCode)
+        writeDBF(posPat, ppPat, prPat, saveFile, inpname, "_PATTERNS", idx)
 
-    posCurv = QgsVectorLayer("point?crs=EPSG:4326", "Curves", "memory")
-    prCurv = posCurv.dataProvider()
-    fields = ["Curve_ID", "X-Value", "Y-Value", "Type"]
-    fieldsCode = [0, 0, 0, 0]
-    createColumnsAttrb(prCurv, fields, fieldsCode)
-    writeDBF(posCurv, ppCurv, prCurv, saveFile, inpname, "_CURVES", idx)
-
+        posCurv = QgsVectorLayer("point?crs=EPSG:4326", "Curves", "memory")
+        prCurv = posCurv.dataProvider()
+        fields = ["Curve_ID", "X-Value", "Y-Value", "Type"]
+        fieldsCode = [0, 0, 0, 0]
+        createColumnsAttrb(prCurv, fields, fieldsCode)
+        writeDBF(posCurv, ppCurv, prCurv, saveFile, inpname, "_CURVES", idx)
+    except:
+        pass
+    
     # Write Valve Shapefile
     posValve = QgsVectorLayer("LineString?crs=EPSG:4326", "Valve", "memory")
     prValve = posValve.dataProvider()
