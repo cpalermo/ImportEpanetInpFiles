@@ -100,7 +100,7 @@ def epa2gis(inpname):
         for t in range(0, maxCategories):
             for u in range(0, len(ndBaseD)):
                 ndBaseTmp[u][t] = 0
-                ndPatTmp.append(['None'] * 2)
+                ndPatTmp.append(['None'] * maxCategories)
 
         for uu in range(0, len(ndBaseD)):
             if d.getBinNodeBaseDemands():
