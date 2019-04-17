@@ -837,9 +837,16 @@ def getBinInfo():
                     nodeJunctionsIDDemSection.append(mm[0])
                     nodeJunctionsDemSection.append(float(mm[1]))
                     try:
-                        nodeJunctionsPatDemSection.append(mm[2])
+                        if mm[2] != ';':
+                            nodeJunctionsPatDemSection.append(mm[2])
+                        else:
+                            nodeJunctionsPatDemSection.append('')
                     except:
                         nodeJunctionsPatDemSection.append('')
+
+                    if mm[-1] == ';':
+                        mm[-1] = ''
+                        mm.append(';')
                     demandsSection.append(mm)
 
         if sec[9] == 1:  # CURVES

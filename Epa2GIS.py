@@ -100,7 +100,7 @@ def epa2gis(inpname):
         for t in range(0, maxCategories):
             for u in range(0, len(ndBaseD)):
                 ndBaseTmp[u][t] = 0
-                ndPatTmp.append(['None'] * maxCategories)
+                ndPatTmp.append([''] * maxCategories)
 
         for uu in range(0, len(ndBaseD)):
             if d.getBinNodeBaseDemands():
@@ -693,26 +693,26 @@ def epa2gis(inpname):
             CurvesTmpIndices.append(curvesID.count(curvesIDunique[p]))
 
         curveIndices = []
-        Curve = d.getBinLinkPumpCurveNameID()
+        Curve = d.getBinCurvesNameID()
         for i in range(len(Curve)):
             curveIndices.append(curvesIDunique.index(Curve[i]))
-        if d.getBinCurveCount():
-            CurvesTmpIndicesFinal = []
-            CurvesTmpIndicesFinal.append([CurvesTmpIndices[index] for index in curveIndices])
 
-            CurvesTmp = []
+        if d.getBinCurveCount():
+            #CurvesTmpIndicesFinal = [CurvesTmpIndices[index] for index in curveIndices]
+            CurvesTmp = ['']*len(curvesIDunique)
             i = 0
-            for u in range(max(CurvesTmpIndicesFinal[0])):
-                fields.append('Head' + str(u + 1))
-                fields.append('Flow' + str(u + 1))
+            for pump in range(d.getBinLinkPumpCount()):
+                fields.append('Head' + str(pump + 1))
+                fields.append('Flow' + str(pump + 1))
                 fieldsCode.append(1)
                 fieldsCode.append(1)
-                if u < d.getBinCurveCount():
-                    tmp1 = []
-                    for p in range(CurvesTmpIndices[u]):
-                        tmp1.append([curveXY[i][0], curveXY[i][1]])
-                        i = i + 1
-                    CurvesTmp.append(tmp1)
+
+            for u in range(d.getBinCurveCount()):
+                tmp1 = []
+                for p in range(CurvesTmpIndices[u]):
+                    tmp1.append([curveXY[i][0], curveXY[i][1]])
+                    i = i + 1
+                CurvesTmp[u] = tmp1
 
         createColumnsAttrb(prPump, fields, fieldsCode)
 
