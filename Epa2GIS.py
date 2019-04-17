@@ -701,13 +701,13 @@ def epa2gis(inpname):
             #CurvesTmpIndicesFinal = [CurvesTmpIndices[index] for index in curveIndices]
             CurvesTmp = ['']*len(curvesIDunique)
             i = 0
-            for pump in range(d.getBinLinkPumpCount()):
-                fields.append('Head' + str(pump + 1))
-                fields.append('Flow' + str(pump + 1))
-                fieldsCode.append(1)
-                fieldsCode.append(1)
-
             for u in range(d.getBinCurveCount()):
+                if u < d.getBinLinkPumpCount():
+                    fields.append('Head' + str(u + 1))
+                    fields.append('Flow' + str(u + 1))
+                    fieldsCode.append(1)
+                    fieldsCode.append(1)
+
                 tmp1 = []
                 for p in range(CurvesTmpIndices[u]):
                     tmp1.append([curveXY[i][0], curveXY[i][1]])
