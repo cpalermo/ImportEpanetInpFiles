@@ -116,12 +116,12 @@ def epa2gis(inpname):
                 ndPatTmp[p][t] = otherDemads[2][i]
             t = t + 1
             if t > max(counter.values()) - 1:
-                t = max(counter.values()) - 1
-            if i > 0:
-                if otherDemadsIndex[i - 1] == p:
-                    ndBaseTmp[p][t] = otherDemads[0][i]
-                    ndPatTmp[p][t] = otherDemads[2][i]
-                    t = t - 1
+                t = 0#max(counter.values()) - 1
+            #if i > 0:
+            #    if otherDemadsIndex[i - 1] == p:
+            #        ndBaseTmp[p][t] = otherDemads[0][i]
+            #        ndPatTmp[p][t] = otherDemads[2][i]
+            #        t = t - 1
         # Write Junction Shapefile
         fields = ["ID", "Elevation"]  # , "pattern", "demand"]
         fieldsCode = [0, 1]
