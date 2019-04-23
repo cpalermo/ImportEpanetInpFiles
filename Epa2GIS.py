@@ -106,17 +106,21 @@ def epa2gis(inpname):
             if d.getBinNodeBaseDemands():
                 ndBaseTmp[uu][0] = ndBaseD[uu]
                 ndPatTmp[uu][0] = ndPatID[uu]
-        t = 0
-        for i, p in enumerate(otherDemadsIndex):
-            if d.getBinNodeBaseDemands():
-                ndBaseTmp[p][t] = ndBaseD[otherDemadsIndex[i]]
-                ndPatTmp[p][t] = ndPatID[otherDemadsIndex[i]]
-            else:
-                ndBaseTmp[p][t] = otherDemads[0][i]
-                ndPatTmp[p][t] = otherDemads[2][i]
-            t = t + 1
-            if t > max(counter.values()) - 1:
-                t = 0#max(counter.values()) - 1
+
+        dem_cat_tot = list(counter.values())
+
+        l = 0
+        for i, p in enumerate(dem_cat_tot):
+            for t in range(p):
+                demInd = otherDemadsIndex[l]
+                if t == 0:
+                    ndBaseTmp[demInd][t] = ndBaseD[demInd]
+                    ndPatTmp[demInd][t] = ndPatID[demInd]
+                if p>1:
+                    ndBaseTmp[demInd][t] = otherDemads[0][l]
+                    ndPatTmp[demInd][t] = otherDemads[2][l]
+                l=l+1
+
             #if i > 0:
             #    if otherDemadsIndex[i - 1] == p:
             #        ndBaseTmp[p][t] = otherDemads[0][i]
