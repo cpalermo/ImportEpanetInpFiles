@@ -31,8 +31,7 @@ def epa2gis(inpname):
     d.BinUpdateClass()
     nlinkCount = d.getBinLinkCount()
 
-    res = newpath + '\\'
-    saveFile = res + inpname[:len(inpname) - 4]
+    saveFile = os.path.join(newpath, inpname[:len(inpname) - 4])
 
     # Get all Sections
     mixing = d.getMixingSection()
