@@ -689,7 +689,7 @@ def epa2gis(inpname):
     # Write Pump Shapefile
     posPump = QgsVectorLayer("LineString?crs=EPSG:4326", "Pump", "memory")
     prPump = posPump.dataProvider()
-    fields = ["ID", "NodeFrom", "NodeTo", "Power", "Pattern", "Curve", "Descr"]
+    fields = ["ID", "NodeFrom", "NodeTo", "Power", "Pattern", "Curve", "Desc"]
     fieldsCode = [0, 0, 0, 0, 0, 0, 0]
     createColumnsAttrb(prPump, fields, fieldsCode)
     posPump.startEditing()
