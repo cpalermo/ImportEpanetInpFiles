@@ -1,1 +1,6 @@
 *.pyc
+Epa2GIS.py
+.idea/ImportEpanetInpFiles.iml
+metadata.txt
+README.md
+main.py
