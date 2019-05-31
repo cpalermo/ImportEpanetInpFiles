@@ -134,7 +134,7 @@ def epa2gis(inpname):
             fields.append('Pattern' + str(u + 1))
             fieldsCode.append(1)
             fieldsCode.append(0)
-        fields.append('Description')
+        fields.append('Desc')
         fieldsCode.append(0)
         posJunction = QgsVectorLayer("point?crs=EPSG:4326", "Junctions", "memory")
         prJunction = posJunction.dataProvider()
@@ -150,7 +150,7 @@ def epa2gis(inpname):
     if nlinkCount > 0:
         posPipe = QgsVectorLayer("LineString?crs=EPSG:4326", "Pipes", "memory")
         prPipe = posPipe.dataProvider()
-        fields = ["ID", "NodeFrom", "NodeTo", "Status", "Length", "Diameter", "Roughness", "MinorLoss", "Description"]
+        fields = ["ID", "NodeFrom", "NodeTo", "Status", "Length", "Diameter", "Roughness", "MinorLoss", "Desc"]
         fieldsCode = [0, 0, 0, 0, 1, 1, 1, 1, 0]
         createColumnsAttrb(prPipe, fields, fieldsCode)
         posPipe.startEditing()
@@ -173,7 +173,7 @@ def epa2gis(inpname):
     posTank = QgsVectorLayer("point?crs=EPSG:4326", "Tanks", "memory")
     prTank = posTank.dataProvider()
 
-    fields = ["ID", "Elevation", "InitLevel", "MinLevel", "MaxLevel", "Diameter", "MinVolume", "VolumeCurve", "Description"]
+    fields = ["ID", "Elevation", "InitLevel", "MinLevel", "MaxLevel", "Diameter", "MinVolume", "VolumeCurve", "Desc"]
     fieldsCode = [0, 1, 1, 1, 1, 1, 1, 0, 0]
     createColumnsAttrb(prTank, fields, fieldsCode)
     posTank.startEditing()
@@ -192,7 +192,7 @@ def epa2gis(inpname):
     # Write Reservoir Shapefile
     posReservoirs = QgsVectorLayer("point?crs=EPSG:4326", "Reservoirs", "memory")
     prReservoirs = posReservoirs.dataProvider()
-    fields = ["ID", "Head", "Description"]
+    fields = ["ID", "Head", "Desc"]
     fieldsCode = [0, 1, 0]
     createColumnsAttrb(prReservoirs, fields, fieldsCode)
     head = d.getBinNodeReservoirElevations()
@@ -647,7 +647,7 @@ def epa2gis(inpname):
     posValve = QgsVectorLayer("LineString?crs=EPSG:4326", "Valve", "memory")
     prValve = posValve.dataProvider()
 
-    fields = ["ID", "NodeFrom", "NodeTo", "Diameter", "Type", "Setting", "MinorLoss", "Description"]
+    fields = ["ID", "NodeFrom", "NodeTo", "Diameter", "Type", "Setting", "MinorLoss", "Desc"]
     fieldsCode = [0, 0, 0, 1, 0, 1, 1, 0]
     createColumnsAttrb(prValve, fields, fieldsCode)
     posValve.startEditing()
@@ -689,7 +689,7 @@ def epa2gis(inpname):
     # Write Pump Shapefile
     posPump = QgsVectorLayer("LineString?crs=EPSG:4326", "Pump", "memory")
     prPump = posPump.dataProvider()
-    fields = ["ID", "NodeFrom", "NodeTo", "Power", "Pattern", "Curve", "Description"]
+    fields = ["ID", "NodeFrom", "NodeTo", "Power", "Pattern", "Curve", "Descr"]
     fieldsCode = [0, 0, 0, 0, 0, 0, 0]
     createColumnsAttrb(prPump, fields, fieldsCode)
     posPump.startEditing()
