@@ -676,7 +676,7 @@ def epa2gis(inpname):
                  linkMinorloss[i], linkDescription[i]])
             prValve.addFeatures([feature])
 
-    QgsVectorFileWriter.writeAsVectorFormat(posValve, saveFile + "_valves" + '.shp', "utf-8",
+    QgsVectorFileWriter.writeAsVectorFormat(posValve, saveFile + "_valves" + '.shp', "System",
                                             QgsCoordinateReferenceSystem(posValve.crs().authid()), "ESRI Shapefile")
     ll = QgsVectorLayer(saveFile + "_valves" + '.shp', inpname[:len(inpname) - 4] + "_valves", "ogr")
     QgsProject.instance().addMapLayer(ll, False)
@@ -798,7 +798,7 @@ def epa2gis(inpname):
 
             prPump.addFeatures([feature])
 
-    QgsVectorFileWriter.writeAsVectorFormat(posPump,saveFile+"_pumps"+'.shp', "utf-8",
+    QgsVectorFileWriter.writeAsVectorFormat(posPump,saveFile+"_pumps"+'.shp', "System",
                                             QgsCoordinateReferenceSystem(posPump.crs().authid()), "ESRI Shapefile")
     ll = QgsVectorLayer(saveFile + "_pumps" + '.shp', inpname[:len(inpname) - 4] + "_pumps", "ogr")
     QgsProject.instance().addMapLayer(ll, False)
@@ -808,7 +808,7 @@ def epa2gis(inpname):
     ll.loadNamedStyle(plugin_path + "/qmls/" + 'pumpsline' + ".qml")
     ll.triggerRepaint()
 
-    QgsVectorFileWriter.writeAsVectorFormat(posPipe,saveFile+"_pipes"+'.shp', "utf-8",
+    QgsVectorFileWriter.writeAsVectorFormat(posPipe,saveFile+"_pipes"+'.shp', "System",
                                             QgsCoordinateReferenceSystem(posPipe.crs().authid()), "ESRI Shapefile")
     ll = QgsVectorLayer(saveFile + "_pipes" + '.shp', inpname[:len(inpname) - 4] + "_pipes", "ogr")
     QgsProject.instance().addMapLayer(ll, False)
@@ -819,7 +819,7 @@ def epa2gis(inpname):
     ll.triggerRepaint()
     iface.mapCanvas().setExtent(ll.extent())
 
-    QgsVectorFileWriter.writeAsVectorFormat(posJunction,saveFile+"_junctions"+'.shp', "utf-8",
+    QgsVectorFileWriter.writeAsVectorFormat(posJunction,saveFile+"_junctions"+'.shp', "System",
                                             QgsCoordinateReferenceSystem(posJunction.crs().authid()), "ESRI Shapefile")
     ll = QgsVectorLayer(saveFile + "_junctions" + '.shp', inpname[:len(inpname) - 4] + "_junctions", "ogr")
     QgsProject.instance().addMapLayer(ll, False)
@@ -829,7 +829,7 @@ def epa2gis(inpname):
     ll.loadNamedStyle(plugin_path + "/qmls/" + 'junctions' + ".qml")
     ll.triggerRepaint()
 
-    QgsVectorFileWriter.writeAsVectorFormat(posTank, saveFile + "_tanks" + '.shp', "utf-8",
+    QgsVectorFileWriter.writeAsVectorFormat(posTank, saveFile + "_tanks" + '.shp', "System",
                                             QgsCoordinateReferenceSystem(posTank.crs().authid()), "ESRI Shapefile")
     ll = QgsVectorLayer(saveFile + "_tanks" + '.shp', inpname[:len(inpname) - 4] + "_tanks", "ogr")
     QgsProject.instance().addMapLayer(ll, False)
@@ -839,7 +839,7 @@ def epa2gis(inpname):
     ll.loadNamedStyle(plugin_path + "/qmls/" + 'tanks' + ".qml")
     ll.triggerRepaint()
 
-    QgsVectorFileWriter.writeAsVectorFormat(posReservoirs, saveFile + "_reservoirs" + '.shp', "utf-8",
+    QgsVectorFileWriter.writeAsVectorFormat(posReservoirs, saveFile + "_reservoirs" + '.shp', "System",
                                             QgsCoordinateReferenceSystem(posReservoirs.crs().authid()), "ESRI Shapefile")
     ll = QgsVectorLayer(saveFile + "_reservoirs" + '.shp', inpname[:len(inpname) - 4] + "_reservoirs", "ogr")
     QgsProject.instance().addMapLayer(ll, False)
@@ -857,7 +857,7 @@ def writeDBF(pos, pp, pr, save_file, inpname, param, idx):
         feat.setAttributes(pp[i])
         pr.addFeatures([feat])
     epsgCode = pos.crs().authid()
-    QgsVectorFileWriter.writeAsVectorFormat(pos, save_file + param + '.dbf', "utf-8",
+    QgsVectorFileWriter.writeAsVectorFormat(pos, save_file + param + '.dbf', "System",
                                             QgsCoordinateReferenceSystem(epsgCode), "DBF file")
     ll = QgsVectorLayer(save_file + param + '.dbf', inpname[:len(inpname) - 4] + param, "ogr")
     QgsProject.instance().addMapLayer(ll, False)
