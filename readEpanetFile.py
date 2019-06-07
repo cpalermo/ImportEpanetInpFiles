@@ -449,7 +449,7 @@ def getLabelsSection():
 # Get all info
 def getBinInfo():
     global inpname
-    file = open(inpname, 'r')
+    file = open(inpname, 'r', encoding="ISO-8859-1")
 
     nodeJunctionNameID = []
     nodeJunctionElevations = []
