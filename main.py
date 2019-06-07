@@ -156,12 +156,16 @@ class ImpEpanet(object):
                         if self.layers[indLayerName].geometryType() == 0:
                             eval('xy' + sect + '.append(geom.asPoint())')
                         elif self.layers[indLayerName].geometryType() == 1:
-                            eval('xy' + sect + '.append(geom.asPolyline())')
+                            try:
+                                geom_polyline = geom.asPolyline()
+                            except:
+                                geom_polyline = geom.asMultiPolyline()
+                            eval('xy' + sect + '.append(geom_polyline)')
                             if sect == 'pipes':
-                                if len(geom.asPolyline()) > 2:
-                                    for pp in range(len(geom.asPolyline())-2):
+                                if len(geom.asMultiPolyline()[0]) > 2:
+                                    for pp in range(len(geom.asMultiPolyline()[0]) - 2):
                                         xypipes_id.append(elem.attributes()[0])
-                                        xypipesvert.append(geom.asPolyline()[pp])
+                                        xypipesvert.append(geom.asMultiPolyline()[0][pp])
                     if sect == 'junctions':
                         if 'Elevation' not in locals()['sect' + sect][0].keys():
                             QMessageBox.warning(QWidget(), "Message", "Elevation field is missing.")
@@ -174,11 +178,11 @@ class ImpEpanet(object):
         node_i_ds = []
         for i in range(len(locals()['sectjunctions'])):
             node_i_ds.append(locals()['sectjunctions'][i]['ID'])
-            f.write(locals()['sectjunctions'][i]['ID'] + '   ' + str(locals()['sectjunctions'][i]['Elevation']) + '\n')
+            f.write(locals()['sectjunctions'][i]['ID'] + '   ' + str(locals()['sectjunctions'][i]['Elevation']) + '   ;' + str(locals()['sectjunctions'][i]['Desc'])  + '\n')
         f.write('\n[RESERVOIRS]\n')
         for i in range(len(locals()['sectreservoirs'])):
             node_i_ds.append(locals()['sectreservoirs'][i]['ID'])
-            f.write(locals()['sectreservoirs'][i]['ID'] + '   ' + str(locals()['sectreservoirs'][i]['Head']) + '\n')
+            f.write(locals()['sectreservoirs'][i]['ID'] + '   ' + str(locals()['sectreservoirs'][i]['Head']) + '   ;' + str(locals()['sectreservoirs'][i]['Desc']) + '\n')
         f.write('\n[TANKS]\n')
         for i in range(len(locals()['secttanks'])):
             node_i_ds.append(locals()['secttanks'][i]['ID'])
@@ -187,7 +191,7 @@ class ImpEpanet(object):
             f.write(locals()['secttanks'][i]['ID'] + '   ' + str(locals()['secttanks'][i]['Elevation']) + '   ' + str(locals()['secttanks'][i]['InitLevel'])
                     + '   ' + str(locals()['secttanks'][i]['MinLevel']) + '   ' + str(locals()['secttanks'][i]['MaxLevel']) + '   ' + str(
                 locals()['secttanks'][i]['Diameter'])
-                    + '   ' + str(locals()['secttanks'][i]['MinVolume']) + '   ' + str(locals()['secttanks'][i]['VolumeCurv']) + '   ' + '\n')
+                    + '   ' + str(locals()['secttanks'][i]['MinVolume']) + '   ' + str(locals()['secttanks'][i]['VolumeCurv']) + '   ;' + str(locals()['secttanks'][i]['Desc']) + '\n')
         f.write('\n[PIPES]\n')
         for i in range(len(locals()['sectpipes'])):
             if (locals()['sectpipes'][i]['NodeFrom'] in node_i_ds) and (locals()['sectpipes'][i]['NodeTo'] in node_i_ds):
@@ -195,7 +199,7 @@ class ImpEpanet(object):
                         + '   ' + locals()['sectpipes'][i]['NodeTo'] + '   ' + str(locals()['sectpipes'][i]['Length']) + '   ' + str(
                     locals()['sectpipes'][i]['Diameter'])
                         + '   ' + str(locals()['sectpipes'][i]['Roughness']) + '   ' + str(locals()['sectpipes'][i]['MinorLoss']) + '   ' +
-                        locals()['sectpipes'][i]['Status'] + '\n')
+                        locals()['sectpipes'][i]['Status'] + '   ;' + str(locals()['sectpipes'][i]['Desc']) + '\n')
         f.write('\n[PUMPS]\n')
         for i in range(len(locals()['sectpumps'])):
             if locals()['sectpumps'][i]['Curve'] != 'NULL':
@@ -223,7 +227,7 @@ class ImpEpanet(object):
             try:
                 f.write(locals()['sectpumps'][i]['ID'] + '   ' + locals()['sectpumps'][i]['NodeFrom']
                         + '   ' + locals()['sectpumps'][i]['NodeTo'] + '   ' + locals()['sectpumps'][i]['Curve']
-                        + '   ' + str(locals()['sectpumps'][i]['Pattern']) + '   ' + str(locals()['sectpumps'][i]['Power']) + '\n')
+                        + '   ' + str(locals()['sectpumps'][i]['Pattern']) + '   ' + str(locals()['sectpumps'][i]['Power']) + '   ;' + str(locals()['sectpumps'][i]['Desc'])+ '\n')
             except:
                 f.write(locals()['sectpumps'][i]['ID']  +'\n')
 
@@ -239,12 +243,12 @@ class ImpEpanet(object):
                     locals()['sectvalves'][i]['NodeTo'] = locals()['sectvalves'][i]['NodeTo'] + ''
                 except:
                     locals()['sectvalves'][i]['NodeTo'] = ""
-                f.write("{}   {}   {}   {}    {}    {}    {}\n".format(locals()['sectvalves'][i]['ID'], locals()['sectvalves'][i]['NodeFrom'],
+                f.write("{}   {}   {}   {}    {}    {}    {}   {}\n".format(locals()['sectvalves'][i]['ID'], locals()['sectvalves'][i]['NodeFrom'],
                                                                        locals()['sectvalves'][i]['NodeTo'],
                                                                        str(locals()['sectvalves'][i]['Diameter']),
                                                                        locals()['sectvalves'][i]['Type'],
                                                                        str(locals()['sectvalves'][i]['Setting']),
-                                                                       str(locals()['sectvalves'][i]['MinorLoss'])))
+                                                                       str(locals()['sectvalves'][i]['MinorLoss']),';'+str(locals()['sectvalves'][i]['Desc'])))
 
         f.write('\n[DEMANDS]\n')
         for i in range(len(locals()['sectjunctions'])):

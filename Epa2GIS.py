@@ -134,6 +134,8 @@ def epa2gis(inpname):
             fields.append('Pattern' + str(u + 1))
             fieldsCode.append(1)
             fieldsCode.append(0)
+        fields.append('Desc')
+        fieldsCode.append(0)
         posJunction = QgsVectorLayer("point?crs=EPSG:4326", "Junctions", "memory")
         prJunction = posJunction.dataProvider()
         ndBaseTmp = ndBaseTmp.tolist()
@@ -141,14 +143,15 @@ def epa2gis(inpname):
         createColumnsAttrb(prJunction, fields, fieldsCode)
         posJunction.startEditing()
         ndEle = d.getBinNodeJunctionElevations()
+        ndDes = d.getBinNodeJunctionDescription()
 
     # Get data of Pipes
     # Write shapefile pipe
     if nlinkCount > 0:
         posPipe = QgsVectorLayer("LineString?crs=EPSG:4326", "Pipes", "memory")
         prPipe = posPipe.dataProvider()
-        fields = ["ID", "NodeFrom", "NodeTo", "Status", "Length", "Diameter", "Roughness", "MinorLoss"]
-        fieldsCode = [0, 0, 0, 0, 1, 1, 1, 1]
+        fields = ["ID", "NodeFrom", "NodeTo", "Status", "Length", "Diameter", "Roughness", "MinorLoss", "Desc"]
+        fieldsCode = [0, 0, 0, 0, 1, 1, 1, 1, 0]
         createColumnsAttrb(prPipe, fields, fieldsCode)
         posPipe.startEditing()
 
@@ -163,13 +166,15 @@ def epa2gis(inpname):
         linkDiameters = d.getBinLinkDiameter()
         linkRough = d.getBinLinkRoughnessCoeff()
         linkMinorloss = d.getBinLinkMinorLossCoeff()
+        linkDescription=d.getBinLinkPipeDescription()
+
 
     # Write Tank Shapefile and get tank data
     posTank = QgsVectorLayer("point?crs=EPSG:4326", "Tanks", "memory")
     prTank = posTank.dataProvider()
 
-    fields = ["ID", "Elevation", "InitLevel", "MinLevel", "MaxLevel", "Diameter", "MinVolume", "VolumeCurve"]
-    fieldsCode = [0, 1, 1, 1, 1, 1, 1, 0]
+    fields = ["ID", "Elevation", "InitLevel", "MinLevel", "MaxLevel", "Diameter", "MinVolume", "VolumeCurve", "Desc"]
+    fieldsCode = [0, 1, 1, 1, 1, 1, 1, 0, 0]
     createColumnsAttrb(prTank, fields, fieldsCode)
     posTank.startEditing()
 
@@ -182,14 +187,17 @@ def epa2gis(inpname):
         minimumvol = d.getBinNodeTankMinimumWaterVolume()
         volumecurv = d.getBinNodeTankVolumeCurveID()
         ndTankID = d.getBinNodeTankNameID()
+        ndTankDescription = d.getBinNodeTankDescription()
 
     # Write Reservoir Shapefile
     posReservoirs = QgsVectorLayer("point?crs=EPSG:4326", "Reservoirs", "memory")
     prReservoirs = posReservoirs.dataProvider()
-    fields = ["ID", "Head"]
-    fieldsCode = [0, 1]
+    fields = ["ID", "Head", "Desc"]
+    fieldsCode = [0, 1, 0]
     createColumnsAttrb(prReservoirs, fields, fieldsCode)
     head = d.getBinNodeReservoirElevations()
+    ndReservoirDescription = d.getBinNodeReservoirDescription()
+
     posReservoirs.startEditing()
 
     if times:
@@ -231,7 +239,7 @@ def epa2gis(inpname):
                 ndIndexNew = ndCoordsID.index(ndID[i])
                 featJ = QgsFeature()
                 point = QgsPointXY(float(x[ndIndexNew]), float(y[ndIndexNew]))
-                featJ.initAttributes(2 + len(ndBaseTmp[0]) * 2)
+                featJ.initAttributes(3 + len(ndBaseTmp[0]) * 2)
                 featJ.setGeometry(QgsGeometry.fromPointXY(point))
                 featJ.setAttribute(0, ndID[i])
                 featJ.setAttribute(1, ndEle[i])
@@ -240,7 +248,9 @@ def epa2gis(inpname):
                     featJ.setAttribute(w, ndBaseTmp[i][j])
                     featJ.setAttribute(w + 1, ndPatTmp[i][j])
                     w = w + 2
+                    featJ.setAttribute(w, ndDes[i])
                 prJunction.addFeatures([featJ])
+
             except:
                 pass
         if i < nlinkCount:
@@ -276,7 +286,7 @@ def epa2gis(inpname):
 
                     featPipe.setAttributes(
                         [linkID[i], ndlConn[0][i], ndlConn[1][i], stat[i], linkLengths[i], linkDiameters[i], linkRough[i],
-                         linkMinorloss[i]])
+                         linkMinorloss[i],linkDescription[i]])
                     prPipe.addFeatures([featPipe])
             except:
                 pass
@@ -292,7 +302,7 @@ def epa2gis(inpname):
             featTank.setGeometry(QgsGeometry.fromPointXY(point))
             featTank.setAttributes(
                 [ndTankID[i], ndTankelevation[i], initiallev[i], minimumlev[i], maximumlev[i], diameter[i],
-                 minimumvol[i], volumecurv[i]])
+                 minimumvol[i], volumecurv[i], ndTankDescription[i]])
             prTank.addFeatures([featTank])
 
         if i < d.getBinNodeReservoirCount():
@@ -304,7 +314,7 @@ def epa2gis(inpname):
             feature = QgsFeature()
             point = QgsPointXY(float(x[ndIndexNew]), float(y[ndIndexNew]))
             feature.setGeometry(QgsGeometry.fromPointXY(point))
-            feature.setAttributes([ndID[p], head[i]])
+            feature.setAttributes([ndID[p], head[i], ndReservoirDescription[i]])
             prReservoirs.addFeatures([feature])
 
         if i < allSections[12]:
@@ -637,18 +647,20 @@ def epa2gis(inpname):
     posValve = QgsVectorLayer("LineString?crs=EPSG:4326", "Valve", "memory")
     prValve = posValve.dataProvider()
 
-    fields = ["ID", "NodeFrom", "NodeTo", "Diameter", "Type", "Setting", "MinorLoss"]
-    fieldsCode = [0, 0, 0, 1, 0, 1, 1]
+    fields = ["ID", "NodeFrom", "NodeTo", "Diameter", "Type", "Setting", "MinorLoss", "Desc"]
+    fieldsCode = [0, 0, 0, 1, 0, 1, 1, 0]
     createColumnsAttrb(prValve, fields, fieldsCode)
     posValve.startEditing()
 
     if d.getBinLinkValveCount() > 0:
+
 
         linkID = d.getBinLinkValveNameID()
         linkType = d.getBinLinkValveType()  # valve type
         linkDiameter = d.getBinLinkValveDiameters()
         linkInitSett = d.getBinLinkValveSetting()  # BinLinkValveSetting
         linkMinorloss = d.getBinLinkValveMinorLoss()
+        linkDescription = d.getBinLinkValveDescription()
 
         for i, p in enumerate(d.getBinLinkValveIndex()):
             try:
@@ -661,7 +673,7 @@ def epa2gis(inpname):
 
             feature.setAttributes(
                 [linkID[i], ndlConn[0][p], ndlConn[1][p], linkDiameter[i], linkType[i], linkInitSett[i],
-                 linkMinorloss[i]])
+                 linkMinorloss[i], linkDescription[i]])
             prValve.addFeatures([feature])
 
     QgsVectorFileWriter.writeAsVectorFormat(posValve, saveFile + "_valves" + '.shp', "utf-8",
@@ -677,8 +689,8 @@ def epa2gis(inpname):
     # Write Pump Shapefile
     posPump = QgsVectorLayer("LineString?crs=EPSG:4326", "Pump", "memory")
     prPump = posPump.dataProvider()
-    fields = ["ID", "NodeFrom", "NodeTo", "Power", "Pattern", "Curve"]
-    fieldsCode = [0, 0, 0, 0, 0, 0]
+    fields = ["ID", "NodeFrom", "NodeTo", "Power", "Pattern", "Curve", "Desc"]
+    fieldsCode = [0, 0, 0, 0, 0, 0, 0]
     createColumnsAttrb(prPump, fields, fieldsCode)
     posPump.startEditing()
 
@@ -725,6 +737,7 @@ def epa2gis(inpname):
         patternsIDs = d.getBinLinkPumpPatterns()
         ppatt = d.getBinLinkPumpPatternsPumpID()
         linkID = d.getBinLinkNameID()
+        pumpdescription = d.getBinLinkPumpDescription()
 
         for i, p in enumerate(d.getBinLinkPumpIndex()):
 
@@ -760,23 +773,24 @@ def epa2gis(inpname):
                 Curve = d.getBinLinkPumpCurveNameID()[i]
                 curveIndex = curvesIDunique.index(Curve)
 
-            feature.initAttributes(6 + sum(CurvesTmpIndices) * 2 + 1)
+            feature.initAttributes(7 + sum(CurvesTmpIndices) * 2 + 1)
             feature.setAttribute(0, linkID[p])
             feature.setAttribute(1, ndlConn[0][p])
             feature.setAttribute(2, ndlConn[1][p])
             feature.setAttribute(3, power)
             feature.setAttribute(4, pattern)
             feature.setAttribute(5, Curve)
+            feature.setAttribute(6, pumpdescription)
 
             if d.getBinCurveCount() == 1:
-                w = 6
+                w = 7
                 for p in range(CurvesTmpIndices[curveIndex]):
                     feature.setAttribute(w, CurvesTmp[curveIndex][p][0])
                     feature.setAttribute(w + 1, CurvesTmp[curveIndex][p][1])
                     w = w + 2
 
             for j in range(d.getBinCurveCount() - 1):
-                w = 6
+                w = 7
                 for p in range(CurvesTmpIndices[curveIndex]):
                     feature.setAttribute(w, CurvesTmp[curveIndex][p][0])
                     feature.setAttribute(w + 1, CurvesTmp[curveIndex][p][1])

@@ -54,6 +54,9 @@ def getBinNodeJunctionNameID():
     global mm
     return mm[0]
 
+def getBinNodeJunctionDescription():
+    global mm
+    return mm[67]
 
 def getBinReservoirNameID():
     global mm
@@ -69,6 +72,9 @@ def getBinNodeReservoirElevations():
     global mm
     return mm[6]
 
+def getBinNodeReservoirDescription():
+    global mm
+    return mm[69]
 
 def getBinNodeBaseDemands():
     global mm
@@ -124,6 +130,9 @@ def getBinNodeTankVolumeCurveID():
     global mm
     return mm[35]
 
+def getBinNodeTankDescription():
+    global mm
+    return mm[68]
 
 # Get Links Info
 def getBinLinkPumpIndex():
@@ -222,6 +231,10 @@ def getBinLinkPipeMinorLoss():
     global mm
     return mm[21]
 
+def getBinLinkPipeDescription():
+    global mm
+    return mm[70]
+
 
 # Get Pumps Info
 def getBinLinkPumpCount():
@@ -262,8 +275,12 @@ def getBinLinkPumpPatternsPumpID():
     global mm
     return mm[39]
 
+def getBinLinkPumpDescription():
+    global mm
+    return mm[71]
 
 # Get Valves Info
+
 def getBinLinkValveCount():
     return len(getBinLinkValveNameID())
 
@@ -291,6 +308,10 @@ def getBinLinkValveSetting():
 def getBinLinkValveMinorLoss():
     global mm
     return mm[31]
+
+def getBinLinkValveDescription():
+    global mm
+    return mm[66]
 
 
 def getBinNodesConnectingLinksID():
@@ -432,6 +453,7 @@ def getBinInfo():
 
     nodeJunctionNameID = []
     nodeJunctionElevations = []
+    nodeJunctionDescription = []
     nodeJunctionBaseDemands = []
 
     nodeJunctionsDemSection = []
@@ -441,6 +463,7 @@ def getBinInfo():
     nodePatternNameID = []
     nodeReservoirNameID = []
     nodeReservoirElevations = []
+    nodeReservoirDescription = []
 
     BinNodeTankNameID = []
     BinNodeTankElevation = []
@@ -450,6 +473,7 @@ def getBinInfo():
     BinNodeTankDiameter = []
     BinNodeTankMinVol = []
     BinNodeTankVolumeCurveID = []
+    BinNodeTankDescription = []
 
     BinLinkPipeNameID = []
     BinLinkFromNode = []
@@ -458,6 +482,7 @@ def getBinInfo():
     BinLinkPipeDiameters = []
     BinLinkPipeRoughness = []
     BinLinkPipeMinorLoss = []
+    BinLinkPipeDescription = []
 
     BinLinkPumpPatterns = []
     BinLinkPumpCurveNameID = []
@@ -466,12 +491,15 @@ def getBinInfo():
     BinLinkPumpNameID = []
     BinLinkPumpSpeed = []
     BinLinkPumpPatternsPumpID = []
+    BinLinkPumpDescription = []
+
 
     BinLinkValveNameID = []
     BinLinkValveDiameters = []
     BinLinkValveType = []
     BinLinkValveSetting = []
     BinLinkValveMinorLoss = []
+    BinLinkValveDescription = []
 
     BinLinkInitialStatus = []
     BinLinkInitialStatusNameID = []
@@ -545,7 +573,9 @@ def getBinInfo():
                     qualitySection, rulesSection, sourcesSection, energySection, reactionsSection,
                     reactionsOptionSection, mixingSection,  # 51#52#53#54#55#56#57
                     timesSection, optionsSection, reportSection, labelsSection,  # 58#59#60#61
-                    nodeJunctionsDemSection, nodeJunctionsIDDemSection, nodeJunctionsPatDemSection, nodewithCoords]  # 62#63#64#65
+                    nodeJunctionsDemSection, nodeJunctionsIDDemSection, nodeJunctionsPatDemSection, nodewithCoords,BinLinkValveDescription, nodeJunctionDescription,
+                    BinNodeTankDescription, nodeReservoirDescription, BinLinkPipeDescription, BinLinkPumpDescription]  # 62#63#64#65#66#67#68#69#70#71
+
 
         elif "[JUNCTIONS]" in s1:
             sec[0] = 1
@@ -677,11 +707,14 @@ def getBinInfo():
                         nodeJunctionBaseDemands.append(float(mm[2]))
                     if len(mm) > 3:
                         if mm[3][0] != ';':
-                            nodePatternNameID.append(mm[3])
+                             nodePatternNameID.append(mm[3])
+                             nodeJunctionDescription.append(mm[4][1:])
                         else:
-                            nodePatternNameID.append('')
+                             nodePatternNameID.append('')
+                             nodeJunctionDescription.append(mm[3][1:])
                     else:
                         nodePatternNameID.append('')
+                        nodeJunctionDescription.append(mm[3][1:])
 
         if sec[1] == 1:  # RESERVOIRS
             if "[" in s1:
@@ -696,10 +729,13 @@ def getBinInfo():
                     if len(mm) > 2:
                         if mm[2][0] != ';':
                             nodePatternNameID.append(mm[2])
+                            nodeReservoirDescription.append(mm[3][1:])
                         else:
                             nodePatternNameID.append('')
+                            nodeReservoirDescription.append(mm[2][1:])
                     else:
                         nodePatternNameID.append('')
+                        nodeReservoirDescription.append(mm[2][1:])
 
         if sec[2] == 1:  # TANKS
             if "[" in s1:
@@ -720,10 +756,13 @@ def getBinInfo():
                     if len(mm) > 7:
                         if mm[7][0] != ';':
                             BinNodeTankVolumeCurveID.append(mm[7])
+                            BinNodeTankDescription.append(mm[8][1:])
                         else:
                             BinNodeTankVolumeCurveID.append('')
+                            BinNodeTankDescription.append(mm[7][1:])
                     else:
                         BinNodeTankVolumeCurveID.append('')
+                        BinNodeTankDescription.append(mm[7][1:])
 
         if sec[3] == 1:  # PIPES
             if "[" in s1:
@@ -748,8 +787,10 @@ def getBinInfo():
                         if mm[7][0] != ';':
                             if mm[7] == 'Open':
                                 BinLinkInitialStatus.append('OPEN')
+                                BinLinkPipeDescription.append(mm[8][1:])
                             else:
                                 BinLinkInitialStatus.append(mm[7])
+                                BinLinkPipeDescription.append(mm[8][1:])
 
         if sec[4] == 1:  # PUMPS
             if "[" in s1:
@@ -763,23 +804,32 @@ def getBinInfo():
                     BinLinkPumpNameID.append(mm[0])
                     BinLinkFromNode.append(mm[1])
                     BinLinkToNode.append(mm[2])
-                    if len(mm) > 4:
+                    if 4 < len(mm) < 6:
                         if mm[3] == 'HEAD':
                             BinLinkPumpCurveNameID.append(mm[4])
+                            BinLinkPumpDescription.append(mm[5][1:])
                         elif mm[3] == 'POWER':
-                            BinLinkPumpPower.append(float(mm[4]))
-                            BinLinkPumpNameIDPower.append(mm[0])
-                    if len(mm) > 6:
+                            if mm[4][0] != ';':
+                                BinLinkPumpPower.append((mm[4]))
+                                BinLinkPumpDescription.append(mm[5][1:])
+                                BinLinkPumpNameIDPower.append(mm[0])
+                            else:
+                                BinLinkPumpPower.append('')
+                                BinLinkPumpDescription.append(mm[4][1:])
+                    if 6 < len(mm) < 8:
                         if mm[5][0] != ';':
                             if mm[5] == 'SPEED':
                                 BinLinkPumpSpeed.append(mm[6])
-                            else:
+                                BinLinkPumpDescription.append(mm[7][1:])
+                            elif mm[5] == 'PATTERN':
                                 BinLinkPumpPatterns.append(mm[6])
+                                BinLinkPumpDescription.append(mm[7][1:])
                                 BinLinkPumpPatternsPumpID.append(mm[0])
-
                     if len(mm) > 8:
                         BinLinkPumpPatterns.append(mm[8])
+                        BinLinkPumpDescription.append(mm[9][1:])
                         BinLinkPumpPatternsPumpID.append(mm[0])
+
 
         if sec[5] == 1:  # VALVES
             if "[" in s1:
@@ -796,9 +846,10 @@ def getBinInfo():
                     BinLinkValveDiameters.append(float(mm[3]))
                     BinLinkValveType.append(mm[4])
                     BinLinkValveSetting.append(float(mm[5]))
-                    if len(mm) > 6:
-                        if mm[6][0] != ';':
-                            BinLinkValveMinorLoss.append(float(mm[6]))
+                    BinLinkValveMinorLoss.append(float(mm[6]))
+                    #if len(mm) > 7:
+                       # if mm[7][0] != ';':
+                    BinLinkValveDescription.append(mm[7][1:])
 
         if sec[6] == 1:  # PATTERNS
             if "[" in s1:
@@ -900,6 +951,7 @@ def getBinInfo():
                     linkIndex = linknameid.index(mm[0])
                     vertx[linkIndex].append(float(mm[1]))
                     verty[linkIndex].append(float(mm[2]))
+
 
         if sec2[2] == 1:  # EMITTERS
             if "[" in s1:
@@ -1057,6 +1109,7 @@ EN_MINLEVEL = 20
 EN_MAXLEVEL = 21
 EN_MIXFRACTION = 22
 EN_TANK_KBULK = 23
+EN_DESCRIPTION = 24
 
 EN_DIAMETER = 0  # /* Link parameters */
 EN_LENGTH = 1
@@ -1072,6 +1125,7 @@ EN_HEADLOSS = 10
 EN_STATUS = 11
 EN_SETTING = 12
 EN_ENERGY = 13
+EN_DESCRIPTION = 14
 
 EN_DURATION = 0  # /* Time parameters */
 EN_HYDSTEP = 1
