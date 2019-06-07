@@ -804,7 +804,7 @@ def getBinInfo():
                     BinLinkPumpNameID.append(mm[0])
                     BinLinkFromNode.append(mm[1])
                     BinLinkToNode.append(mm[2])
-                    if 4 < len(mm) < 6:
+                    if 'HEAD' in mm or 'POWER' in mm:
                         if mm[3] == 'HEAD':
                             BinLinkPumpCurveNameID.append(mm[4])
                             BinLinkPumpDescription.append(mm[5][1:])
@@ -816,7 +816,7 @@ def getBinInfo():
                             else:
                                 BinLinkPumpPower.append('')
                                 BinLinkPumpDescription.append(mm[4][1:])
-                    if 6 < len(mm) < 8:
+                    if 'SPEED' in mm or 'PATTERN' in mm:
                         if mm[5][0] != ';':
                             if mm[5] == 'SPEED':
                                 BinLinkPumpSpeed.append(mm[6])
