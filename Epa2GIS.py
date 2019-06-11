@@ -770,8 +770,11 @@ def epa2gis(inpname):
                 pattern = 'NULL'
 
             if d.getBinCurveCount() > 0 and len(pumpNameIDPower) == 0:
-                Curve = d.getBinLinkPumpCurveNameID()[i]
-                curveIndex = curvesIDunique.index(Curve)
+                try:
+                    Curve = d.getBinLinkPumpCurveNameID()[i]
+                    curveIndex = curvesIDunique.index(Curve)
+                except:
+                    Curve= ''
 
             feature.initAttributes(7 + sum(CurvesTmpIndices) * 2 + 1)
             feature.setAttribute(0, linkID[p])
@@ -782,19 +785,20 @@ def epa2gis(inpname):
             feature.setAttribute(5, Curve)
             feature.setAttribute(6, pumpdescription)
 
-            if d.getBinCurveCount() == 1:
-                w = 7
-                for p in range(CurvesTmpIndices[curveIndex]):
-                    feature.setAttribute(w, CurvesTmp[curveIndex][p][0])
-                    feature.setAttribute(w + 1, CurvesTmp[curveIndex][p][1])
-                    w = w + 2
+            if 'curveIndex' in locals():
+                if d.getBinCurveCount() == 1:
+                    w = 7
+                    for p in range(CurvesTmpIndices[curveIndex]):
+                        feature.setAttribute(w, CurvesTmp[curveIndex][p][0])
+                        feature.setAttribute(w + 1, CurvesTmp[curveIndex][p][1])
+                        w = w + 2
 
-            for j in range(d.getBinCurveCount() - 1):
-                w = 7
-                for p in range(CurvesTmpIndices[curveIndex]):
-                    feature.setAttribute(w, CurvesTmp[curveIndex][p][0])
-                    feature.setAttribute(w + 1, CurvesTmp[curveIndex][p][1])
-                    w = w + 2
+                for j in range(d.getBinCurveCount() - 1):
+                    w = 7
+                    for p in range(CurvesTmpIndices[curveIndex]):
+                        feature.setAttribute(w, CurvesTmp[curveIndex][p][0])
+                        feature.setAttribute(w + 1, CurvesTmp[curveIndex][p][1])
+                        w = w + 2
 
             prPump.addFeatures([feature])
 
