@@ -4,11 +4,11 @@ from qgis.PyQt.QtWidgets import QAction, QFileDialog, QMessageBox, QWidget
 from .ExportEpanetInpFiles_dialog import ExportEpanetInpFilesDialog
 from qgis.PyQt.QtGui import *#QIcon
 from qgis.PyQt.QtCore import *#QVariant, Qt
+from qgis.core import QgsProject
 from .Epa2GIS import epa2gis
 from . import resources_rc
 import sys
 import os
-
 
 class ImpEpanet(object):
     def __init__(self, iface):
@@ -65,7 +65,7 @@ class ImpEpanet(object):
 
     def runexp(self):
         self.dlg.out.setText('')
-        self.layers = self.canvas.layers()
+        self.layers = [layer for layer in QgsProject.instance().mapLayers().values()]#self.canvas.layers()
         self.layer_list = []
         self.layer_list = ['NONE']
         [self.layer_list.append(layer.name()) for layer in self.layers]
