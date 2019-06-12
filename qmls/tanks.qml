@@ -1,9 +1,9 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis simplifyMaxScale="1" readOnly="0" version="3.0.0-Girona" simplifyDrawingTol="1" maxScale="0" minScale="0" simplifyAlgorithm="0" labelsEnabled="0" simplifyDrawingHints="0" hasScaleBasedVisibilityFlag="0" simplifyLocal="1">
-  <renderer-v2 type="singleSymbol" forceraster="0" enableorderby="0" symbollevels="0">
+<qgis simplifyDrawingHints="0" minScale="0" simplifyLocal="1" maxScale="0" simplifyAlgorithm="0" labelsEnabled="0" simplifyMaxScale="1" simplifyDrawingTol="1" readOnly="0" version="3.0.0-Girona" hasScaleBasedVisibilityFlag="0">
+  <renderer-v2 type="singleSymbol" symbollevels="0" enableorderby="0" forceraster="0">
     <symbols>
-      <symbol name="0" type="marker" alpha="1" clip_to_extent="1">
-        <layer enabled="1" class="SimpleMarker" locked="0" pass="0">
+      <symbol clip_to_extent="1" type="marker" name="0" alpha="1">
+        <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
           <prop v="0" k="angle"/>
           <prop v="135,126,227,255" k="color"/>
           <prop v="1" k="horizontal_anchor_point"/>
@@ -24,9 +24,9 @@
           <prop v="1" k="vertical_anchor_point"/>
           <data_defined_properties>
             <Option type="Map">
-              <Option value="" name="name" type="QString"/>
+              <Option type="QString" name="name" value=""/>
               <Option name="properties"/>
-              <Option value="collection" name="type" type="QString"/>
+              <Option type="QString" name="type" value="collection"/>
             </Option>
           </data_defined_properties>
         </layer>
@@ -36,41 +36,41 @@
     <sizescale/>
   </renderer-v2>
   <customproperties>
-    <property value="0" key="embeddedWidgets/count"/>
+    <property key="embeddedWidgets/count" value="0"/>
     <property key="variableNames"/>
     <property key="variableValues"/>
   </customproperties>
   <blendMode>0</blendMode>
   <featureBlendMode>0</featureBlendMode>
   <layerOpacity>1</layerOpacity>
-  <SingleCategoryDiagramRenderer diagramType="Histogram" attributeLegend="1">
-    <DiagramCategory scaleDependency="Area" barWidth="5" diagramOrientation="Up" backgroundColor="#ffffff" rotationOffset="0" penColor="#000000" penWidth="0" labelPlacementMethod="XHeight" scaleBasedVisibility="0" height="15" lineSizeScale="3x:0,0,0,0,0,0" minimumSize="0" maxScaleDenominator="1e+8" sizeType="MM" sizeScale="3x:0,0,0,0,0,0" backgroundAlpha="255" lineSizeType="MM" penAlpha="255" enabled="0" width="15" minScaleDenominator="0" opacity="1">
+  <SingleCategoryDiagramRenderer attributeLegend="1" diagramType="Histogram">
+    <DiagramCategory width="15" penColor="#000000" labelPlacementMethod="XHeight" enabled="0" sizeScale="3x:0,0,0,0,0,0" minimumSize="0" maxScaleDenominator="1e+8" backgroundAlpha="255" diagramOrientation="Up" lineSizeType="MM" rotationOffset="0" barWidth="5" penWidth="0" scaleBasedVisibility="0" backgroundColor="#ffffff" lineSizeScale="3x:0,0,0,0,0,0" scaleDependency="Area" height="15" minScaleDenominator="0" penAlpha="255" opacity="1" sizeType="MM">
       <fontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
-      <attribute field="" label="" color="#000000"/>
+      <attribute label="" field="" color="#000000"/>
     </DiagramCategory>
   </SingleCategoryDiagramRenderer>
-  <DiagramLayerSettings placement="0" obstacle="0" dist="0" priority="0" zIndex="0" linePlacementFlags="2" showAll="1">
+  <DiagramLayerSettings showAll="1" obstacle="0" placement="0" priority="0" zIndex="0" linePlacementFlags="2" dist="0">
     <properties>
       <Option type="Map">
-        <Option value="" name="name" type="QString"/>
-        <Option name="properties" type="Map">
-          <Option name="positionX" type="Map">
-            <Option value="true" name="active" type="bool"/>
-            <Option value="ID" name="field" type="QString"/>
-            <Option value="2" name="type" type="int"/>
+        <Option type="QString" name="name" value=""/>
+        <Option type="Map" name="properties">
+          <Option type="Map" name="positionX">
+            <Option type="bool" name="active" value="true"/>
+            <Option type="QString" name="field" value="ID"/>
+            <Option type="int" name="type" value="2"/>
           </Option>
-          <Option name="positionY" type="Map">
-            <Option value="true" name="active" type="bool"/>
-            <Option value="ID" name="field" type="QString"/>
-            <Option value="2" name="type" type="int"/>
+          <Option type="Map" name="positionY">
+            <Option type="bool" name="active" value="true"/>
+            <Option type="QString" name="field" value="ID"/>
+            <Option type="int" name="type" value="2"/>
           </Option>
-          <Option name="show" type="Map">
-            <Option value="true" name="active" type="bool"/>
-            <Option value="ID" name="field" type="QString"/>
-            <Option value="2" name="type" type="int"/>
+          <Option type="Map" name="show">
+            <Option type="bool" name="active" value="true"/>
+            <Option type="QString" name="field" value="ID"/>
+            <Option type="int" name="type" value="2"/>
           </Option>
         </Option>
-        <Option value="collection" name="type" type="QString"/>
+        <Option type="QString" name="type" value="collection"/>
       </Option>
     </properties>
   </DiagramLayerSettings>
@@ -79,8 +79,8 @@
       <editWidget type="TextEdit">
         <config>
           <Option type="Map">
-            <Option value="false" name="IsMultiline" type="bool"/>
-            <Option value="false" name="UseHtml" type="bool"/>
+            <Option type="bool" name="IsMultiline" value="false"/>
+            <Option type="bool" name="UseHtml" value="false"/>
           </Option>
         </config>
       </editWidget>
@@ -136,14 +136,14 @@
     </field>
   </fieldConfiguration>
   <aliases>
-    <alias field="ID" name="" index="0"/>
-    <alias field="Elevation" name="" index="1"/>
-    <alias field="InitLevel" name="" index="2"/>
-    <alias field="MinLevel" name="" index="3"/>
-    <alias field="MaxLevel" name="" index="4"/>
-    <alias field="Diameter" name="" index="5"/>
-    <alias field="MinVolume" name="" index="6"/>
-    <alias field="VolumeCurv" name="" index="7"/>
+    <alias field="ID" index="0" name=""/>
+    <alias field="Elevation" index="1" name=""/>
+    <alias field="InitLevel" index="2" name=""/>
+    <alias field="MinLevel" index="3" name=""/>
+    <alias field="MaxLevel" index="4" name=""/>
+    <alias field="Diameter" index="5" name=""/>
+    <alias field="MinVolume" index="6" name=""/>
+    <alias field="VolumeCurv" index="7" name=""/>
   </aliases>
   <excludeAttributesWMS/>
   <excludeAttributesWFS/>
@@ -158,14 +158,14 @@
     <default field="VolumeCurv" expression="''" applyOnUpdate="0"/>
   </defaults>
   <constraints>
-    <constraint field="ID" notnull_strength="2" constraints="1" exp_strength="0" unique_strength="0"/>
-    <constraint field="Elevation" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
-    <constraint field="InitLevel" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
-    <constraint field="MinLevel" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
-    <constraint field="MaxLevel" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
-    <constraint field="Diameter" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
-    <constraint field="MinVolume" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
-    <constraint field="VolumeCurv" notnull_strength="0" constraints="0" exp_strength="0" unique_strength="0"/>
+    <constraint constraints="1" field="ID" notnull_strength="2" exp_strength="0" unique_strength="0"/>
+    <constraint constraints="0" field="Elevation" notnull_strength="0" exp_strength="0" unique_strength="0"/>
+    <constraint constraints="0" field="InitLevel" notnull_strength="0" exp_strength="0" unique_strength="0"/>
+    <constraint constraints="0" field="MinLevel" notnull_strength="0" exp_strength="0" unique_strength="0"/>
+    <constraint constraints="0" field="MaxLevel" notnull_strength="0" exp_strength="0" unique_strength="0"/>
+    <constraint constraints="0" field="Diameter" notnull_strength="0" exp_strength="0" unique_strength="0"/>
+    <constraint constraints="0" field="MinVolume" notnull_strength="0" exp_strength="0" unique_strength="0"/>
+    <constraint constraints="0" field="VolumeCurv" notnull_strength="0" exp_strength="0" unique_strength="0"/>
   </constraints>
   <constraintExpressions>
     <constraint exp="" desc="" field="ID"/>
@@ -178,24 +178,24 @@
     <constraint exp="" desc="" field="VolumeCurv"/>
   </constraintExpressions>
   <attributeactions>
-    <defaultAction value="{65700e89-4f41-4ed8-a9d2-92ae998580d2}" key="Canvas"/>
-    <actionsetting id="{abf0f75d-d540-4dba-95b7-0a5e773d384c}" action="" capture="0" name="" type="0" icon="" notificationMessage="" shortTitle="">
+    <defaultAction key="Canvas" value="{abf0f75d-d540-4dba-95b7-0a5e773d384c}"/>
+    <actionsetting action="" type="0" id="{8863574a-4d92-4ae1-b7f9-d021f1275b2a}" shortTitle="" capture="0" name="" icon="" notificationMessage="">
       <actionScope id="Field"/>
-      <actionScope id="Feature"/>
       <actionScope id="Canvas"/>
+      <actionScope id="Feature"/>
     </actionsetting>
   </attributeactions>
-  <attributetableconfig sortExpression="" actionWidgetStyle="dropDown" sortOrder="0">
+  <attributetableconfig sortOrder="0" sortExpression="" actionWidgetStyle="dropDown">
     <columns>
-      <column name="ID" type="field" width="-1" hidden="0"/>
-      <column name="Elevation" type="field" width="-1" hidden="0"/>
-      <column name="InitLevel" type="field" width="-1" hidden="0"/>
-      <column name="MinLevel" type="field" width="-1" hidden="0"/>
-      <column name="MaxLevel" type="field" width="-1" hidden="0"/>
-      <column name="Diameter" type="field" width="-1" hidden="0"/>
-      <column name="MinVolume" type="field" width="-1" hidden="0"/>
-      <column name="VolumeCurv" type="field" width="-1" hidden="0"/>
-      <column type="actions" width="-1" hidden="1"/>
+      <column type="field" hidden="0" name="ID" width="-1"/>
+      <column type="field" hidden="0" name="Elevation" width="-1"/>
+      <column type="field" hidden="0" name="InitLevel" width="-1"/>
+      <column type="field" hidden="0" name="MinLevel" width="-1"/>
+      <column type="field" hidden="0" name="MaxLevel" width="-1"/>
+      <column type="field" hidden="0" name="Diameter" width="-1"/>
+      <column type="field" hidden="0" name="MinVolume" width="-1"/>
+      <column type="field" hidden="0" name="VolumeCurv" width="-1"/>
+      <column type="actions" hidden="1" width="-1"/>
     </columns>
   </attributetableconfig>
   <editform>.</editform>
@@ -232,14 +232,14 @@ def my_form_open(dialog, layer, feature):
     <field name="VolumeCurv" editable="1"/>
   </editable>
   <labelOnTop>
-    <field name="Diameter" labelOnTop="0"/>
-    <field name="Elevation" labelOnTop="0"/>
-    <field name="ID" labelOnTop="0"/>
-    <field name="InitLevel" labelOnTop="0"/>
-    <field name="MaxLevel" labelOnTop="0"/>
-    <field name="MinLevel" labelOnTop="0"/>
-    <field name="MinVolume" labelOnTop="0"/>
-    <field name="VolumeCurv" labelOnTop="0"/>
+    <field labelOnTop="0" name="Diameter"/>
+    <field labelOnTop="0" name="Elevation"/>
+    <field labelOnTop="0" name="ID"/>
+    <field labelOnTop="0" name="InitLevel"/>
+    <field labelOnTop="0" name="MaxLevel"/>
+    <field labelOnTop="0" name="MinLevel"/>
+    <field labelOnTop="0" name="MinVolume"/>
+    <field labelOnTop="0" name="VolumeCurv"/>
   </labelOnTop>
   <widgets/>
   <conditionalstyles>
