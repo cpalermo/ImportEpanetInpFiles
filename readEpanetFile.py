@@ -704,7 +704,8 @@ def getBinInfo():
                     nodeJunctionNameID.append(mm[0])
                     nodeJunctionElevations.append(float(mm[1]))
                     if len(mm) > 2:
-                        nodeJunctionBaseDemands.append(float(mm[2]))
+                        if ';' not in mm[2]:
+                            nodeJunctionBaseDemands.append(float(mm[2]))
                     try:
                         index_semicolons = s1.index(';')
                     except:
