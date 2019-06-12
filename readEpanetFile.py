@@ -821,7 +821,7 @@ def getBinInfo():
                     BinLinkFromNode.append(mm[1])
                     BinLinkToNode.append(mm[2])
                     try:
-                        index_semicolons=s1.index(';')
+                        index_semicolons = s1.index(';')
                     except:
                         pass
                     if 'HEAD' in mm or 'POWER' in mm:
@@ -829,22 +829,45 @@ def getBinInfo():
                             BinLinkPumpCurveNameID.append(mm[4])
                             BinLinkPumpDescription.append(s1[index_semicolons+1:])
                         elif mm[3] == 'POWER':
-                            if mm[4][0] != ';':
-                                BinLinkPumpPower.append((mm[4]))
-                                BinLinkPumpDescription.append(s1[index_semicolons+1:])
-                                BinLinkPumpNameIDPower.append(mm[0])
-                            else:
-                                BinLinkPumpPower.append('')
-                                BinLinkPumpDescription.append(s1[index_semicolons+1:])
+                            if len(mm) < 5:
+                                if mm[4][0] != ';':
+                                    BinLinkPumpPower.append((mm[4]))
+                                    BinLinkPumpDescription.append(s1[index_semicolons+1:])
+                                    BinLinkPumpNameIDPower.append(mm[0])
+                                else:
+                                    BinLinkPumpPower.append('')
+                                    BinLinkPumpDescription.append(s1[index_semicolons+1:])
+                            if len(mm) > 5:
+                                if mm[4] == 'SPEED':
+                                    BinLinkPumpPower.append('')
+                                if mm[4] =='PATTERN':
+                                    BinLinkPumpPower.append('')
+                                else:
+                                    BinLinkPumpPower.append((mm[4]))
+
                     if 'SPEED' in mm or 'PATTERN' in mm:
-                        if mm[5][0] != ';':
-                            if mm[5] == 'SPEED':
+
+                        if mm[4] == 'SPEED':
+                                BinLinkPumpSpeed.append(mm[5])
+                                BinLinkPumpDescription.append(s1[index_semicolons+1:])
+                        elif mm[4] == 'PATTERN':
+                                BinLinkPumpPatterns.append(mm[5])
+                                BinLinkPumpDescription.append(s1[index_semicolons+1:])
+                                BinLinkPumpPatternsPumpID.append(mm[0])
+
+                        if mm[5] == 'SPEED':
                                 BinLinkPumpSpeed.append(mm[6])
                                 BinLinkPumpDescription.append(s1[index_semicolons+1:])
-                            elif mm[5] == 'PATTERN':
+                        elif mm[5] == 'PATTERN':
                                 BinLinkPumpPatterns.append(mm[6])
                                 BinLinkPumpDescription.append(s1[index_semicolons+1:])
                                 BinLinkPumpPatternsPumpID.append(mm[0])
+
+                    if len(mm) > 7:
+                        BinLinkPumpPatterns.append(mm[7])
+                        BinLinkPumpDescription.append(s1[index_semicolons+1:])
+                        BinLinkPumpPatternsPumpID.append(mm[0])
+
                     if len(mm) > 8:
                         BinLinkPumpPatterns.append(mm[8])
                         BinLinkPumpDescription.append(s1[index_semicolons+1:])
