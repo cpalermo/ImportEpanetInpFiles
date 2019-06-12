@@ -70,7 +70,7 @@ class ImpEpanet(object):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle('Export INP File')
-        msg.setText("Please checked your group of layers you want export.")
+        msg.setText("Please check your group of layers you want export.")
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
 
@@ -87,12 +87,12 @@ class ImpEpanet(object):
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Warning)
                 msg.setWindowTitle('Export INP File')
-                msg.setText("Please checked a group.")
+                msg.setText("Please check a group.")
                 msg.setStandardButtons(QMessageBox.Ok)
                 msg.exec_()
                 return
 
-        self.layers = group_ok.findLayers()#[layer for layer in QgsProject.instance().mapLayers().values()]#self.canvas.layers()
+        self.layers = [lyr.layer() for lyr in group_ok.findLayers()]#[layer for layer in QgsProject.instance().mapLayers().values()]#self.canvas.layers()
         self.layer_list = []
         self.layer_list = ['NONE']
         [self.layer_list.append(layer.name()) for layer in self.layers]
