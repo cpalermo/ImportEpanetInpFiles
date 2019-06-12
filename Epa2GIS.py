@@ -740,11 +740,11 @@ def epa2gis(inpname):
         pumpdescription = d.getBinLinkPumpDescription()
 
         for i, p in enumerate(d.getBinLinkPumpIndex()):
-
             Curve = []
             power = []
             pattern = []
             pumpNameIDPower = d.getBinLinkPumpNameIDPower()
+
             if len(pumpNameIDPower) > 0:
                 for uu in range(0, len(pumpNameIDPower)):
                     if pumpNameIDPower[uu] == pumpID[i]:
@@ -769,7 +769,7 @@ def epa2gis(inpname):
             if not pattern:
                 pattern = 'NULL'
 
-            if d.getBinCurveCount() > 0 and len(pumpNameIDPower) == 0:
+            if d.getBinCurveCount() > 0:
                 try:
                     Curve = d.getBinLinkPumpCurveNameID()[i]
                     curveIndex = curvesIDunique.index(Curve)
@@ -783,7 +783,7 @@ def epa2gis(inpname):
             feature.setAttribute(3, power)
             feature.setAttribute(4, pattern)
             feature.setAttribute(5, Curve)
-            feature.setAttribute(6, pumpdescription)
+            feature.setAttribute(6, pumpdescription[i])
 
             if 'curveIndex' in locals():
                 if d.getBinCurveCount() == 1:

@@ -822,56 +822,40 @@ def getBinInfo():
                     BinLinkToNode.append(mm[2])
                     try:
                         index_semicolons = s1.index(';')
+                        BinLinkPumpDescription.append(s1[index_semicolons + 1:])
                     except:
                         pass
-                    if 'HEAD' in mm or 'POWER' in mm:
-                        if mm[3] == 'HEAD':
-                            BinLinkPumpCurveNameID.append(mm[4])
-                            BinLinkPumpDescription.append(s1[index_semicolons+1:])
-                        elif mm[3] == 'POWER':
-                            if len(mm) < 5:
-                                if mm[4][0] != ';':
-                                    BinLinkPumpPower.append((mm[4]))
-                                    BinLinkPumpDescription.append(s1[index_semicolons+1:])
-                                    BinLinkPumpNameIDPower.append(mm[0])
-                                else:
-                                    BinLinkPumpPower.append('')
-                                    BinLinkPumpDescription.append(s1[index_semicolons+1:])
-                            if len(mm) > 5:
-                                if mm[4] == 'SPEED':
-                                    BinLinkPumpPower.append('')
-                                if mm[4] =='PATTERN':
-                                    BinLinkPumpPower.append('')
-                                else:
-                                    BinLinkPumpPower.append((mm[4]))
 
-                    if 'SPEED' in mm or 'PATTERN' in mm:
+                    try:
+                        index_ = mm.index('POWER')
+                        if mm[index_ + 1].isdigit() == True:
+                            BinLinkPumpPower.append((mm[index_ + 1]))
+                            BinLinkPumpNameIDPower.append(mm[0])
+                    except:
+                        pass
 
-                        if mm[4] == 'SPEED':
-                                BinLinkPumpSpeed.append(mm[5])
-                                BinLinkPumpDescription.append(s1[index_semicolons+1:])
-                        elif mm[4] == 'PATTERN':
-                                BinLinkPumpPatterns.append(mm[5])
-                                BinLinkPumpDescription.append(s1[index_semicolons+1:])
-                                BinLinkPumpPatternsPumpID.append(mm[0])
+                    try:
+                        index_ = mm.index('HEAD')
+                        BinLinkPumpCurveNameID.append((mm[index_ + 1]))
+                    except:
+                        BinLinkPumpCurveNameID.append('')
 
-                        if mm[5] == 'SPEED':
-                                BinLinkPumpSpeed.append(mm[6])
-                                BinLinkPumpDescription.append(s1[index_semicolons+1:])
-                        elif mm[5] == 'PATTERN':
-                                BinLinkPumpPatterns.append(mm[6])
-                                BinLinkPumpDescription.append(s1[index_semicolons+1:])
-                                BinLinkPumpPatternsPumpID.append(mm[0])
+                    try:
+                        index_ = mm.index('SPEED')
+                        BinLinkPumpSpeed.append(mm[index_ + 1])
+                    except:
+                        BinLinkPumpSpeed.append('')
 
-                    if len(mm) > 7:
-                        BinLinkPumpPatterns.append(mm[7])
-                        BinLinkPumpDescription.append(s1[index_semicolons+1:])
+                    try:
+                        index_ = mm.index('PATTERN')
+                        if ';' in mm[index_ + 1]:
+                            BinLinkPumpPatterns.append('')
+                        else:
+                            BinLinkPumpPatterns.append(mm[index_ + 1])
                         BinLinkPumpPatternsPumpID.append(mm[0])
-
-                    if len(mm) > 8:
-                        BinLinkPumpPatterns.append(mm[8])
-                        BinLinkPumpDescription.append(s1[index_semicolons+1:])
-                        BinLinkPumpPatternsPumpID.append(mm[0])
+                    except:
+                        BinLinkPumpPatterns.append('')
+                        BinLinkPumpPatternsPumpID.append('')
 
 
         if sec[5] == 1:  # VALVES
