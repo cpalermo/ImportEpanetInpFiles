@@ -74,14 +74,15 @@ class ImpEpanet(object):
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
 
-        def isGroupSelected(groupName):
-            group = QgsProject.instance().layerTreeRoot().findGroup(groupName)
-            return group in self.iface.layerTreeView().selectedNodes()
-
         ch = False
+        try:
+            activeLayerName = self.iface.activeLayer().name()
+        except:
+            activeLayerName = ''
+
         for group in root.children():
             if group.itemVisibilityChecked():
-                if isGroupSelected(group.name()) or group.name() in self.iface.activeLayer().name():
+                if group in self.iface.layerTreeView().selectedNodes() or group.name() in activeLayerName:
                     group_ok = group
                     ch = True
                     break
