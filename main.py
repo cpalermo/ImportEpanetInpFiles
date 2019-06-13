@@ -80,11 +80,11 @@ class ImpEpanet(object):
 
         ch = False
         for group in root.children():
-            if isGroupSelected(group.name()) or group.name() in self.iface.activeLayer().name():
-            #if group.itemVisibilityChecked():
-                group_ok = group
-                ch = True
-                break
+            if group.itemVisibilityChecked():
+                if isGroupSelected(group.name()) or group.name() in self.iface.activeLayer().name():
+                    group_ok = group
+                    ch = True
+                    break
 
         if not ch:
             try:
