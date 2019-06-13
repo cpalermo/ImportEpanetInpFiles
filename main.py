@@ -70,16 +70,22 @@ class ImpEpanet(object):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle('Export INP File')
-        msg.setText("Please check your group of layers you want export.")
+        msg.setText("Please select your group.")
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
 
+        def isGroupSelected(groupName):
+            group = QgsProject.instance().layerTreeRoot().findGroup(groupName)
+            return group in self.iface.layerTreeView().selectedNodes()
+
         ch = False
         for group in root.children():
-            if group.itemVisibilityChecked():
+            if isGroupSelected(group.name()) or group.name() in self.iface.activeLayer().name():
+            #if group.itemVisibilityChecked():
                 group_ok = group
                 ch = True
                 break
+
         if not ch:
             try:
                 group_ok = root.findGroup(root.children()[0])
@@ -92,7 +98,11 @@ class ImpEpanet(object):
                 msg.exec_()
                 return
 
-        self.layers = [lyr.layer() for lyr in group_ok.findLayers()]  #[layer for layer in QgsProject.instance().mapLayers().values()]#self.canvas.layers()
+        self.layers = []
+        for lyr in group_ok.findLayers():
+            if lyr.itemVisibilityChecked():
+                self.layers.append(lyr.layer())
+        #self.layers = [lyr.layer() for lyr in group_ok.findLayers()]  #[layer for layer in QgsProject.instance().mapLayers().values()]#self.canvas.layers()
         self.layer_list = []
         self.layer_list = ['NONE']
         [self.layer_list.append(layer.name()) for layer in self.layers]
