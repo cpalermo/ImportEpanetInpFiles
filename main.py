@@ -316,7 +316,7 @@ class ImpEpanet(object):
                                                      str(locals()['sectCURVES'][i]['X-Value']),str(locals()['sectCURVES'][i]['Y-Value'])))
 
         f.write('\n[CONTROLS]\n')
-        f.write(';Close Link 12 if the level in Tank 23 exceeds 20 ft. \n')
+        f.write(';------------------------------------------------------------------ \n')
         for i in range(len(locals()['sectCONTROLS'])):
             f.write("{}\n".format(locals()['sectCONTROLS'][i]['Controls']))
 
