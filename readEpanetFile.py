@@ -553,6 +553,13 @@ def getBinInfo():
         if "[END]" in s1:
             # pb.setValue(10)
             file.close()
+            BinLinkValveDescription = list(map(lambda s: s.strip(), BinLinkValveDescription))
+            nodeJunctionDescription = list(map(lambda s: s.strip(), nodeJunctionDescription))
+            BinNodeTankDescription = list(map(lambda s: s.strip(), BinNodeTankDescription))
+            nodeReservoirDescription = list(map(lambda s: s.strip(), nodeReservoirDescription))
+            BinLinkPipeDescription = list(map(lambda s: s.strip(), BinLinkPipeDescription))
+            BinLinkPumpDescription = list(map(lambda s: s.strip(), BinLinkPumpDescription))
+
             return [nodeJunctionNameID, nodeJunctionElevations, nodeJunctionBaseDemands, nodePatternNameID,
                     len(nodeJunctionNameID),  # 01234
                     nodeReservoirNameID, nodeReservoirElevations, len(nodeReservoirNameID),  # 567
@@ -693,6 +700,10 @@ def getBinInfo():
         elif "[" in s1:
             s1 = file.readline()
 
+        if ';' in s1:
+            index_semicolons = s1.index(';')
+            desc_ = s1[index_semicolons + 1:]
+
         if sec[0] == 1:  # JUNCTIONS
             if "[" in s1:
                 continue
@@ -706,20 +717,16 @@ def getBinInfo():
                     if len(mm) > 2:
                         if ';' not in mm[2]:
                             nodeJunctionBaseDemands.append(float(mm[2]))
-                    try:
-                        index_semicolons = s1.index(';')
-                    except:
-                        pass
                     if len(mm) > 3:
                         if mm[3][0] != ';':
                              nodePatternNameID.append(mm[3])
-                             nodeJunctionDescription.append(s1[index_semicolons+1:])
+                             nodeJunctionDescription.append(desc_)
                         else:
                              nodePatternNameID.append('')
-                             nodeJunctionDescription.append(s1[index_semicolons+1:])
+                             nodeJunctionDescription.append(desc_)
                     else:
                         nodePatternNameID.append('')
-                        nodeJunctionDescription.append(s1[index_semicolons+1:])
+                        nodeJunctionDescription.append(desc_)
 
         if sec[1] == 1:  # RESERVOIRS
             if "[" in s1:
@@ -731,20 +738,17 @@ def getBinInfo():
                 else:
                     nodeReservoirNameID.append(mm[0])
                     nodeReservoirElevations.append(float(mm[1]))
-                    try:
-                        index_semicolons=s1.index(';')
-                    except:
-                        pass
+
                     if len(mm) > 2:
                         if mm[2][0] != ';':
                             nodePatternNameID.append(mm[2])
-                            nodeReservoirDescription.append(s1[index_semicolons+1:])
+                            nodeReservoirDescription.append(desc_)
                         else:
                             nodePatternNameID.append('')
-                            nodeReservoirDescription.append(s1[index_semicolons+1:])
+                            nodeReservoirDescription.append(desc_)
                     else:
                         nodePatternNameID.append('')
-                        nodeReservoirDescription.append(s1[index_semicolons+1:])
+                        nodeReservoirDescription.append(desc_)
 
         if sec[2] == 1:  # TANKS
             if "[" in s1:
@@ -762,20 +766,17 @@ def getBinInfo():
                     BinNodeTankDiameter.append(float(mm[5]))
                     BinNodeTankMinVol.append(float(mm[6]))
                     nodePatternNameID.append('')
-                    try:
-                        index_semicolons=s1.index(';')
-                    except:
-                        pass
+
                     if len(mm) > 7:
                         if mm[7][0] != ';':
                             BinNodeTankVolumeCurveID.append(mm[7])
-                            BinNodeTankDescription.append(s1[index_semicolons+1:])
+                            BinNodeTankDescription.append(desc_)
                         else:
                             BinNodeTankVolumeCurveID.append('')
-                            BinNodeTankDescription.append(s1[index_semicolons+1:])
+                            BinNodeTankDescription.append(desc_)
                     else:
                         BinNodeTankVolumeCurveID.append('')
-                        BinNodeTankDescription.append(s1[index_semicolons+1:])
+                        BinNodeTankDescription.append(desc_)
 
         if sec[3] == 1:  # PIPES
             if "[" in s1:
@@ -796,18 +797,15 @@ def getBinInfo():
                         BinLinkPipeMinorLoss.append(float(mm[6]))
                     else:
                         BinLinkPipeMinorLoss.append('')
-                    try:
-                        index_semicolons=s1.index(';')
-                    except:
-                        pass
+
                     if len(mm) > 7:
                         if mm[7][0] != ';':
                             if mm[7] == 'Open':
                                 BinLinkInitialStatus.append('OPEN')
-                                BinLinkPipeDescription.append(s1[index_semicolons+1:])
+                                BinLinkPipeDescription.append(desc_)
                             else:
                                 BinLinkInitialStatus.append(mm[7])
-                                BinLinkPipeDescription.append(s1[index_semicolons+1:])
+                                BinLinkPipeDescription.append(desc_)
 
         if sec[4] == 1:  # PUMPS
             if "[" in s1:
@@ -875,13 +873,7 @@ def getBinInfo():
                     BinLinkValveType.append(mm[4])
                     BinLinkValveSetting.append(float(mm[5]))
                     BinLinkValveMinorLoss.append(float(mm[6]))
-                    #if len(mm) > 7:
-                       # if mm[7][0] != ';':
-                    try:
-                        index_semicolons=s1.index(';')
-                    except:
-                        pass
-                    BinLinkValveDescription.append(s1[index_semicolons+1:])
+                    BinLinkValveDescription.append(desc_)
 
         if sec[6] == 1:  # PATTERNS
             if "[" in s1:
