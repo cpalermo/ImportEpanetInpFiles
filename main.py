@@ -1,14 +1,59 @@
 # (C)Marios Kyriakou 2016
 # University of Cyprus, KIOS Research Center for Intelligent Systems and Networks
-from qgis.PyQt.QtWidgets import QAction, QFileDialog, QMessageBox, QWidget
+from qgis.PyQt.QtWidgets import (QAction, QFileDialog, QMessageBox, QWidget, QWizard, QWizardPage, QVBoxLayout)
 from .ExportEpanetInpFiles_dialog import ExportEpanetInpFilesDialog
 from qgis.PyQt.QtGui import *#QIcon
 from qgis.PyQt.QtCore import *#QVariant, Qt
-from qgis.core import QgsProject, QgsLayerTreeGroup
+from qgis.core import (QgsProject, QgsLayerTreeGroup, QgsCoordinateReferenceSystem, QgsCoordinateTransform)
+from qgis.gui import QgsProjectionSelectionTreeWidget
 from .Epa2GIS import epa2gis
 from . import resources_rc
 import sys
 import os
+
+
+class CrsSelector(QWizard):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.addPage(crs_page(self))
+        global import_export
+        if import_export == 'Import':
+            self.setWindowTitle("IMPORT EPANET INPUT FILE")
+        elif import_export == 'Export':
+            self.setWindowTitle("EXPORT EPANET INPUT FILE WITH SPECIFIC CRS")
+
+        self.setOption(QWizard.NoCancelButton, True)
+        self.setOption(QWizard.NoBackButtonOnLastPage, True)
+        self.setWindowFlags(self.windowFlags() | Qt.CustomizeWindowHint)
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)
+
+
+class crs_page(QWizardPage):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        global import_export
+        if import_export == 'Import':
+            self.setTitle('Project Coordinate System')
+            self.setSubTitle('Choosing an appropriate projection for EPANET layers.')
+        elif import_export == 'Export':
+            self.setTitle('Project Coordinate System')
+            self.setSubTitle('Choosing projection for EPANET coordinates.')
+
+        self.selector = QgsProjectionSelectionTreeWidget()
+        layout = QVBoxLayout()
+        layout.addWidget(self.selector)
+        self.setLayout(layout)
+        self.selector.crsSelected.connect(self.crs_selected)
+
+    def crs_selected(self):
+        self.completeChanged.emit()
+
+    def isComplete(self):
+        global result_crs
+        result_crs = self.selector.crs()
+        return self.selector.crs().isValid()
+
 
 class ImpEpanet(object):
     def __init__(self, iface):
@@ -56,23 +101,52 @@ class ImpEpanet(object):
                                                "Epanet Inp File (*.inp)")
         if filePath[0] == "":
             return
-        epa2gis(filePath[0])
+
+        # Get project CRS
+        #proj_crs = QgsProject.instance().crs().authid()
+
+        # Call selector
+        global import_export
+        import_export = 'Import'
+        self.crs_ui_selector = CrsSelector()
+        check = self.crs_ui_selector.exec()
+        if not check:
+            return
+
+        global result_crs
+        epsg_crs = result_crs.authid()# "EPSG:6312"
+        epa2gis(filePath[0], epsg_crs)
+        # Clear messages
         self.iface.messageBar().clearWidgets()
         msgBox = QMessageBox()
-        msgBox.setWindowTitle('ImportEpanetInpFiles')
+        msgBox.setWindowTitle('Plugin: ImportEpanetInpFiles')
         msgBox.setText('Shapefiles have been created successfully in folder "_shapefiles_".')
         msgBox.exec_()
 
+        # Restore CRS
+        #QgsProject.instance().setCrs(QgsCoordinateReferenceSystem(proj_crs))
+
     def runexp(self):
+
+        # Call selector
+        global import_export
+        import_export = 'Export'
+        self.crs_ui_selector = CrsSelector()
+        check = self.crs_ui_selector.exec()
+        if not check:
+            return
+        global result_crs
+        self.epsg_crs = result_crs.authid()# "EPSG:6312"
+
         self.dlg.out.setText('')
         root = QgsProject.instance().layerTreeRoot()
 
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setWindowTitle('Export INP File')
-        msg.setText("Please select your group.")
-        msg.setStandardButtons(QMessageBox.Ok)
-        msg.exec_()
+        #msg = QMessageBox()
+        #msg.setIcon(QMessageBox.Information)
+        #msg.setWindowTitle('Export INP File')
+        #msg.setText("Please select your group.")
+        #msg.setStandardButtons(QMessageBox.Ok)
+        #msg.exec_()
 
         ch = False
         try:
@@ -187,23 +261,35 @@ class ImpEpanet(object):
                 provider = self.layers[indLayerName].dataProvider()
                 fields = provider.fields()
                 field_names = [field.name() for field in fields]
+
+                crsSrc = self.layers[indLayerName].crs()
+                crsDest = QgsCoordinateReferenceSystem(self.epsg_crs)
+                xform = QgsCoordinateTransform(crsSrc, crsDest, QgsProject.instance())
+
                 for elem in self.layers[indLayerName].getFeatures():
                     eval('sect' + sect + '.append(dict(zip(field_names, elem.attributes())))')
                     if any(sect in s for s in self.sections[0:5]):
                         geom = elem.geometry()
                         if self.layers[indLayerName].geometryType() == 0:
-                            eval('xy' + sect + '.append(geom.asPoint())')
+                            geom_points = xform.transform(geom.asPoint())
+                            eval('xy' + sect + '.append(geom_points)')
                         elif self.layers[indLayerName].geometryType() == 1:
+                            geom_polyline = []
                             try:
-                                geom_polyline = geom.asPolyline()
+                                pntLines = geom.asPolyline()[0]
+                                for pnt in pntLines:
+                                    geom_polyline.append(xform.transform(pnt))
                             except:
-                                geom_polyline = geom.asMultiPolyline()
+                                pntLines = geom.asMultiPolyline()[0]
+                                for pnt in pntLines:
+                                    geom_polyline.append(xform.transform(pnt))
+
                             eval('xy' + sect + '.append(geom_polyline)')
                             if sect == 'pipes':
-                                if len(geom.asMultiPolyline()[0]) > 2:
-                                    for pp in range(len(geom.asMultiPolyline()[0]) - 2):
+                                if len(geom_polyline) > 2:
+                                    for pp in range(len(geom_polyline) - 2):
                                         xypipes_id.append(elem.attributes()[0])
-                                        xypipesvert.append(geom.asMultiPolyline()[0][pp])
+                                        xypipesvert.append(geom_polyline[pp])
                     if sect == 'junctions':
                         if 'Elevation' not in locals()['sect' + sect][0].keys():
                             QMessageBox.warning(QWidget(), "Message", "Elevation field is missing.")

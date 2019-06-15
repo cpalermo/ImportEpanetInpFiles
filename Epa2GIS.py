@@ -15,7 +15,7 @@ import os
 
 
 # noinspection SpellCheckingInspection
-def epa2gis(inpname):
+def epa2gis(inpname, epsg_crs):
     plugin_path = os.path.dirname(__file__)
     file_extension = os.path.dirname(inpname)
     inpname = os.path.basename(inpname)
@@ -136,7 +136,7 @@ def epa2gis(inpname):
             fieldsCode.append(0)
         fields.append('Desc')
         fieldsCode.append(0)
-        posJunction = QgsVectorLayer("point?crs=EPSG:4326", "Junctions", "memory")
+        posJunction = QgsVectorLayer("point?crs="+epsg_crs, "Junctions", "memory")
         prJunction = posJunction.dataProvider()
         ndBaseTmp = ndBaseTmp.tolist()
 
@@ -148,7 +148,7 @@ def epa2gis(inpname):
     # Get data of Pipes
     # Write shapefile pipe
     if nlinkCount > 0:
-        posPipe = QgsVectorLayer("LineString?crs=EPSG:4326", "Pipes", "memory")
+        posPipe = QgsVectorLayer("LineString?crs="+epsg_crs, "Pipes", "memory")
         prPipe = posPipe.dataProvider()
         fields = ["ID", "NodeFrom", "NodeTo", "Status", "Length", "Diameter", "Roughness", "MinorLoss", "Desc"]
         fieldsCode = [0, 0, 0, 0, 1, 1, 1, 1, 0]
@@ -170,7 +170,7 @@ def epa2gis(inpname):
 
 
     # Write Tank Shapefile and get tank data
-    posTank = QgsVectorLayer("point?crs=EPSG:4326", "Tanks", "memory")
+    posTank = QgsVectorLayer("point?crs="+epsg_crs, "Tanks", "memory")
     prTank = posTank.dataProvider()
 
     fields = ["ID", "Elevation", "InitLevel", "MinLevel", "MaxLevel", "Diameter", "MinVolume", "VolumeCurve", "Desc"]
@@ -190,7 +190,7 @@ def epa2gis(inpname):
         ndTankDescription = d.getBinNodeTankDescription()
 
     # Write Reservoir Shapefile
-    posReservoirs = QgsVectorLayer("point?crs=EPSG:4326", "Reservoirs", "memory")
+    posReservoirs = QgsVectorLayer("point?crs="+epsg_crs, "Reservoirs", "memory")
     prReservoirs = posReservoirs.dataProvider()
     fields = ["ID", "Head", "Desc"]
     fieldsCode = [0, 1, 0]
@@ -201,19 +201,19 @@ def epa2gis(inpname):
     posReservoirs.startEditing()
 
     if times:
-        posTimes = QgsVectorLayer("point?crs=EPSG:4326", "Times", "memory")
+        posTimes = QgsVectorLayer("point?crs="+epsg_crs, "Times", "memory")
         prTimes = posTimes.dataProvider()
     if energy:
-        posE = QgsVectorLayer("point?crs=EPSG:4326", "Energy", "memory")
+        posE = QgsVectorLayer("point?crs="+epsg_crs, "Energy", "memory")
         prE = posE.dataProvider()
     if report:
-        posRep = QgsVectorLayer("point?crs=EPSG:4326", "Report", "memory")
+        posRep = QgsVectorLayer("point?crs="+epsg_crs, "Report", "memory")
         prRep = posRep.dataProvider()
     if options:
-        posOpt = QgsVectorLayer("point?crs=EPSG:4326", "Options", "memory")
+        posOpt = QgsVectorLayer("point?crs="+epsg_crs, "Options", "memory")
         prOpt = posOpt.dataProvider()
     if optReactions:
-        posO = QgsVectorLayer("point?crs=EPSG:4326", "Reactions", "memory")
+        posO = QgsVectorLayer("point?crs="+epsg_crs, "Reactions", "memory")
         prO = posO.dataProvider()
 
     ppE = []
@@ -571,70 +571,70 @@ def epa2gis(inpname):
         #if optReactions:
         writeDBF(posO, [ppO], prO, saveFile, inpname, "_REACTIONS", idx)
 
-        posMix = QgsVectorLayer("point?crs=EPSG:4326", "Mixing", "memory")
+        posMix = QgsVectorLayer("point?crs="+epsg_crs, "Mixing", "memory")
         prMix = posMix.dataProvider()
         fields = ["Tank_ID", "Model", "Fraction"]
         fieldsCode = [0, 0, 1]  # 0 String, 1 Double
         createColumnsAttrb(prMix, fields, fieldsCode)
         writeDBF(posMix, ppMix, prMix, saveFile, inpname, "_MIXING", idx)
 
-        posReact = QgsVectorLayer("point?crs=EPSG:4326", "ReactionsI", "memory")
+        posReact = QgsVectorLayer("point?crs="+epsg_crs, "ReactionsI", "memory")
         prReact = posReact.dataProvider()
         fields = ["Type", "Pipe/Tank", "Coeff."]
         fieldsCode = [0, 0, 1]
         createColumnsAttrb(prReact, fields, fieldsCode)
         writeDBF(posReact, ppReactions, prReact, saveFile, inpname, "_REACTIONS_I", idx)
 
-        posSourc = QgsVectorLayer("point?crs=EPSG:4326", "Sources", "memory")
+        posSourc = QgsVectorLayer("point?crs="+epsg_crs, "Sources", "memory")
         prSourc = posSourc.dataProvider()
         fields = ["Node_ID", "Type", "Strength", "Pattern"]
         fieldsCode = [0, 0, 1, 0]
         createColumnsAttrb(prSourc, fields, fieldsCode)
         writeDBF(posSourc, ppSourc, prSourc, saveFile, inpname, "_SOURCES", idx)
 
-        posRul = QgsVectorLayer("point?crs=EPSG:4326", "Rules", "memory")
+        posRul = QgsVectorLayer("point?crs="+epsg_crs, "Rules", "memory")
         prRul = posRul.dataProvider()
         fields = ["Rule_ID", "Rule"]
         fieldsCode = [0, 0]
         createColumnsAttrb(prRul, fields, fieldsCode)
         writeDBF(posRul, ppRul, prRul, saveFile, inpname, "_RULES", idx)
 
-        posQual = QgsVectorLayer("point?crs=EPSG:4326", "Sources", "memory")
+        posQual = QgsVectorLayer("point?crs="+epsg_crs, "Sources", "memory")
         prQual = posQual.dataProvider()
         fields = ["Node_ID", "Init_Qual"]
         fieldsCode = [0, 1]
         createColumnsAttrb(prQual, fields, fieldsCode)
         writeDBF(posQual, ppQual, prQual, saveFile, inpname, "_QUALITY", idx)
 
-        posStat = QgsVectorLayer("point?crs=EPSG:4326", "Status", "memory")
+        posStat = QgsVectorLayer("point?crs="+epsg_crs, "Status", "memory")
         prStat = posStat.dataProvider()
         fields = ["Link_ID", "Status/Setting"]
         fieldsCode = [0, 0]
         createColumnsAttrb(prStat, fields, fieldsCode)
         writeDBF(posStat, ppStat, prStat, saveFile, inpname, "_STATUS", idx)
 
-        posEmit = QgsVectorLayer("point?crs=EPSG:4326", "Emitters", "memory")
+        posEmit = QgsVectorLayer("point?crs="+epsg_crs, "Emitters", "memory")
         prEmit = posEmit.dataProvider()
         fields = ["Junc_ID", "Coeff."]
         fieldsCode = [0, 1]
         createColumnsAttrb(prEmit, fields, fieldsCode)
         writeDBF(posEmit, ppEmit, prEmit, saveFile, inpname, "_EMITTERS", idx)
 
-        posCont = QgsVectorLayer("point?crs=EPSG:4326", "Controls", "memory")
+        posCont = QgsVectorLayer("point?crs="+epsg_crs, "Controls", "memory")
         prCont = posCont.dataProvider()
         fields = ["Controls"]
         fieldsCode = [0]
         createColumnsAttrb(prCont, fields, fieldsCode)
         writeDBF(posCont, ppCont, prCont, saveFile, inpname, "_CONTROLS", idx)
 
-        posPat = QgsVectorLayer("point?crs=EPSG:4326", "Patterns", "memory")
+        posPat = QgsVectorLayer("point?crs="+epsg_crs, "Patterns", "memory")
         prPat = posPat.dataProvider()
         fields = ["Pattern_ID", "Multipliers"]
         fieldsCode = [0, 0]
         createColumnsAttrb(prPat, fields, fieldsCode)
         writeDBF(posPat, ppPat, prPat, saveFile, inpname, "_PATTERNS", idx)
 
-        posCurv = QgsVectorLayer("point?crs=EPSG:4326", "Curves", "memory")
+        posCurv = QgsVectorLayer("point?crs="+epsg_crs, "Curves", "memory")
         prCurv = posCurv.dataProvider()
         fields = ["Curve_ID", "X-Value", "Y-Value", "Type"]
         fieldsCode = [0, 0, 0, 0]
@@ -644,7 +644,7 @@ def epa2gis(inpname):
         pass
     
     # Write Valve Shapefile
-    posValve = QgsVectorLayer("LineString?crs=EPSG:4326", "Valve", "memory")
+    posValve = QgsVectorLayer("LineString?crs="+epsg_crs, "Valve", "memory")
     prValve = posValve.dataProvider()
 
     fields = ["ID", "NodeFrom", "NodeTo", "Diameter", "Type", "Setting", "MinorLoss", "Desc"]
@@ -687,7 +687,7 @@ def epa2gis(inpname):
     ll.triggerRepaint()
 
     # Write Pump Shapefile
-    posPump = QgsVectorLayer("LineString?crs=EPSG:4326", "Pump", "memory")
+    posPump = QgsVectorLayer("LineString?crs="+epsg_crs, "Pump", "memory")
     prPump = posPump.dataProvider()
     fields = ["ID", "NodeFrom", "NodeTo", "Power", "Pattern", "Curve", "Desc"]
     fieldsCode = [0, 0, 0, 0, 0, 0, 0]
