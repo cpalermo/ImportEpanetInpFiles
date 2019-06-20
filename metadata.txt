@@ -11,9 +11,9 @@ name=ImportEpanetInpFiles
 qgisMinimumVersion=2.99
 qgisMaximumVersion=3.99
 description=IMPORT/EXPORT EPANET INP Files
-version=1.4
+version=1.5
 author=Marios S. Kyriakou, KIOS Research and Innovation Center of Excellence (KIOS CoE)
-email=mariosmsk@gmail.com
+email=mkiria01@ucy.ac.cy
 about=This tool can be used to IMPORT EPANET INP File to shapefiles and adds them in the QGIS canvas. Also, the shapefiles stored into the _shapefiles_ folder. Can be used to EXPORT EPANET INP File.
 
 # End of mandatory metadata
@@ -21,28 +21,32 @@ about=This tool can be used to IMPORT EPANET INP File to shapefiles and adds the
 # Optional items:
 
 # Uncomment the following line and add your changelog:
-changelog=2016-03-14  ImportEpanetInpFiles 0.2:
-		Fixed all known bugs
-	  2016-05-06  ImportEpanetInpFiles 0.3:
-		Add sections Times, Options, Report, Energy, Demands, Status, Reactions, Emitters, Controls, Patterns, Quality, Rules, Sources, Mixing, Curves
-	  2017-02-16  ImportEpanetInpFiles 0.4:
-		Fixed error with the QProgressBar, and the section Source
-	  2017-02-16  ImportEpanetInpFiles 0.5:
-		Remove QProgressBar
-	  2017-03-26  ImportEpanetInpFiles 0.6:
-		Update fields names, Remove section Demands, Add Demand and Pattern columns based on demand categories
-	  2017-10-13  ImportEpanetInpFiles 0.7:
-		Fixed error with curves
-	  2018-02-15  ImportEpanetInpFiles 1.0:
-		Issue fixes and migration code to QGIS3
-	  2018-02-16  ImportEpanetInpFiles 1.1:
-		Fixed error in cancel option
-	  2018-02-16  ImportEpanetInpFiles 1.2:
-		Wrong number version
-          2018-04-16  ImportEpanetInpFiles 1.3:
-		Update qml files, logo, add EXPORT button EPANET Inp File
-	  2018-06-14  ImportEpanetInpFiles 1.4:
-	    Ignore nodes without coordinates
+changelog=2019-06-16  ImportEpanetInpFiles 1.5:
+			Fixed issue with curve types, fixed issue when export inp, support more demand categories (Thanks to Paulos Paulou @ppavlo02)
+			Add selector for coordinate system when Import or Export EPANET files. 
+		2018-06-14  ImportEpanetInpFiles 1.4:
+			Ignore nodes without coordinates
+		2018-04-16  ImportEpanetInpFiles 1.3:
+			Update qml files, logo, add EXPORT button EPANET Inp File
+	    2018-02-16  ImportEpanetInpFiles 1.2:
+			Wrong number version
+	    2018-02-16  ImportEpanetInpFiles 1.1:
+			Fixed error in cancel option
+		2018-02-15  ImportEpanetInpFiles 1.0:
+			Issue fixes and migration code to QGIS3
+		2017-10-13  ImportEpanetInpFiles 0.7:
+			Fixed error with curves
+		2017-03-26  ImportEpanetInpFiles 0.6:
+			Update fields names, Remove section Demands, Add Demand and Pattern columns based on demand categories
+		2017-02-16  ImportEpanetInpFiles 0.5:
+			Remove QProgressBar
+		2017-02-16  ImportEpanetInpFiles 0.4:
+			Fixed error with the QProgressBar, and the section Source
+		2016-05-06  ImportEpanetInpFiles 0.3:
+			Add sections Times, Options, Report, Energy, Demands, Status, Reactions, Emitters, Controls, Patterns, Quality, Rules, Sources, Mixing, Curves
+		2016-03-14  ImportEpanetInpFiles 0.2:
+			Fixed all known bugs
+
 		
 # Tags are comma separated with spaces allowed
 tags=epanet,import,export,inp,network
