@@ -163,7 +163,7 @@ class ImpEpanet(object):
 
         if not ch:
             try:
-                group_ok = root.findGroup(root.children()[0].name())
+                group_ok = root.findGroup(root.children()[0])
             except:
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Warning)
@@ -199,7 +199,7 @@ class ImpEpanet(object):
         self.layer_list = []
         self.layer_list = ['NONE']
         for sect in self.sections:
-            exec ('self.dlg.sect_' + sect + '.clear()')
+            exec('self.dlg.sect_' + sect + '.clear()')
         self.dlg.close()
 
     def toolButtonOut(self):
