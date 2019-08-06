@@ -163,7 +163,7 @@ class ImpEpanet(object):
 
         if not ch:
             try:
-                group_ok = root.findGroup(root.children()[0])
+                group_ok = root.findGroup(root.children()[0].name())
             except:
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Warning)
