@@ -21,7 +21,9 @@ about=This tool can be used to IMPORT EPANET INP File to shapefiles and adds the
 # Optional items:
 
 # Uncomment the following line and add your changelog:
-changelog=2019-06-16  ImportEpanetInpFiles 1.5:
+changelog=2019-08-07  ImportEpanetInpFiles 1.6:
+			Fix bug in descriptions field
+        2019-06-16  ImportEpanetInpFiles 1.5:
 			Fixed issue with curve types, fixed issue when export inp, support more demand categories (Thanks to Paulos Paulou @ppavlo02)
 			Add selector for coordinate system when Import or Export EPANET files. 
 		2018-06-14  ImportEpanetInpFiles 1.4:
