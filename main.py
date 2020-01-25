@@ -174,9 +174,19 @@ class ImpEpanet(object):
                 return
 
         self.layers = []
-        for lyr in group_ok.findLayers():
-            if lyr.itemVisibilityChecked():
-                self.layers.append(lyr.layer())
+        try:
+            for lyr in group_ok.findLayers():
+                if lyr.itemVisibilityChecked():
+                    self.layers.append(lyr.layer())
+        except:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setWindowTitle('Export INP File')
+            msg.setText("Please check a group.")
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.exec_()
+            return
+
         #self.layers = [lyr.layer() for lyr in group_ok.findLayers()]  #[layer for layer in QgsProject.instance().mapLayers().values()]#self.canvas.layers()
         self.layer_list = []
         self.layer_list = ['NONE']
@@ -199,7 +209,7 @@ class ImpEpanet(object):
         self.layer_list = []
         self.layer_list = ['NONE']
         for sect in self.sections:
-            exec ('self.dlg.sect_' + sect + '.clear()')
+            exec('self.dlg.sect_' + sect + '.clear()')
         self.dlg.close()
 
     def toolButtonOut(self):
